@@ -37,7 +37,6 @@ def dealMsg(message):
                 print(msg)
                 notifyService = NotifyService(msg)
                 notifyService.sendMessageToWeiXin()
-                globalVar['piece'] += 1
 
         thread.start_new_thread(run, ())
     elif message['e'] == "ACCOUNT_UPDATE":
