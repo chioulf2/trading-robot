@@ -1,4 +1,4 @@
-# 这个策略是根据15分钟MACD金叉死叉来做多做空
+# 这个策略是根据15分钟价格偏离MA30的程度来做多做空
 
 from util import *
 from common import *
@@ -33,6 +33,7 @@ def dealMsg(message):
                      '本次开仓时长: ' + str(round((time.time() - globalVar['this_time']) / 3600, 2)) + ' 小时',
                      '本单盈亏: ' + str(message['o']['rp']) + ' U'])
                 globalVar['this_time'] = time.time()
+                globalVar['piece'] += 1
                 print(msg)
                 notifyService = NotifyService(msg)
                 notifyService.sendMessageToWeiXin()
@@ -45,16 +46,13 @@ def dealMsg(message):
 def loop():
     def run():
         while True:
-            data = getKline(symbol, interval)
-            res = macdjincha(data)
-            if res == 'up' or res == 'down':
-                deleteAllOrder(symbol)
-                deleteAllPosition(symbol)
+            if globalVar['piece'] > 0:
+                data = getKline(symbol, interval)
+                res = pianli(data)
                 if res == 'up':
-                    long(symbol, '0.06', 0.015, 0.01)
+                    long(symbol, '0.06', 0.03, 0.01)
                 elif res == 'down':
-                    short(symbol, '0.06', 0.015, 0.01)
-                time.sleep(15 * 60)
+                    short(symbol, '0.06', 0.03, 0.01)
             time.sleep(5 * 60)
 
     thread.start_new_thread(run, ())

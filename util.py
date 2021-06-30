@@ -56,6 +56,17 @@ def macdjincha(data):
         return 'down'
 
 
+def pianli(data):
+    MA30 = getMA(data, 30)
+    currentPrice = data[-1][4]
+    ratio = abs(currentPrice - MA30) / MA30
+    if ratio > 0.05 and currentPrice > MA30:
+        return 'down'
+    elif ratio > 0.05 and currentPrice < MA30:
+        return 'up'
+    return ''
+
+
 def getKline(symbol, interval):
     method = '/fapi/v1/klines'
     # timestamp = str(getTime())
