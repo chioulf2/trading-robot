@@ -58,7 +58,7 @@ def macdjincha(data):
 
 def pianli(data):
     MA30 = getMA(data, 30)
-    currentPrice = data[-1][4]
+    currentPrice = float(data[-1][4])
     ratio = abs(currentPrice - MA30) / MA30
     if ratio > 0.05 and currentPrice > MA30:
         return 'down'
