@@ -50,9 +50,9 @@ def loop():
                 data = getKline(symbol, interval)
                 res = pianli(data)
                 if res == 'up':
-                    long(symbol, '0.06', 0.03, 0.01)
+                    long(symbol, '0.05', 0.03, 0.01)
                 elif res == 'down':
-                    short(symbol, '0.06', 0.03, 0.01)
+                    short(symbol, '0.05', 0.03, 0.01)
             time.sleep(5 * 60)
 
     thread.start_new_thread(run, ())
