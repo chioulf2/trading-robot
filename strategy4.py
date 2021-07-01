@@ -47,17 +47,17 @@ def hasTrend(data):
     [MB, UP, LB, PB, BW] = getBoll(data)
     currentPrice = float(data[-1][4])
     if (currentPrice > UP or currentPrice < LB) and abs(currentPrice - MB) / MB > 0.02:
-        if currentPrice > UP and abs(currentPrice - UP) / UP > 0.006:
+        if currentPrice > UP and abs(currentPrice - UP) / UP > 0.003:
             return 'up'
-        if currentPrice < LB and abs(currentPrice - LB) / LB > 0.006:
+        if currentPrice < LB and abs(currentPrice - LB) / LB > 0.003:
             return 'down'
     return ''
 
 
 def trendOver(data):
-    [MB, UP, LB, PB, BW] = getBoll(data)
-    currentPrice = float(data[-1][4])
-    if abs(currentPrice - MB) / MB > 0.005:
+    MA30 = getMA(data, 30)
+    currentPrice = float(data[-2][4])
+    if abs(currentPrice - MA30) / MA30 > 0.005:
         return True
     return False
 
@@ -65,12 +65,21 @@ def trendOver(data):
 def loop():
     def run():
         while True:
+            data = getKline(symbol, interval)
+            # 判断是否有持仓，1则无持仓，0则有持仓
             if globalVar['piece'] > 0:
-                data = getKline(symbol, interval)
+                res = hasTrend(data)
                 if res == 'up':
-                    long(symbol, '0.05', 0.03, 0.01)
+                    long(symbol, '0.05', 0.1, 0.01)
                 elif res == 'down':
-                    short(symbol, '0.05', 0.03, 0.01)
+                    short(symbol, '0.05', 0.1, 0.01)
+                else:
+                    # 震荡行情算法
+                    pass
+            else:
+                if trendOver(data):
+                    deleteAllOrder(symbol)
+                    deleteAllPosition(symbol)
             time.sleep(5 * 60)
 
     thread.start_new_thread(run, ())
