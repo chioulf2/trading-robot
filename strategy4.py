@@ -79,8 +79,15 @@ def loop():
             data = getKline(symbol, interval)
             # 持仓状态情况下，判断是否应该平仓
             if globalVar['piece'] == 0:
-                if globalVar['mode'] == 'trend' and trendOver(data) or globalVar['mode'] == 'shock' and hasTrend(
-                        data) != '':
+                # 趋势单是否平仓
+                closeTrendPosition = globalVar['mode'] == 'trend' and trendOver(data)
+                # 震荡单多单是否平仓
+                closeShockUpPosition = globalVar['mode'] == 'shockUp' and (
+                        hasTrend(data) != '' or isNearBollUpOrLb(data) == 'down')
+                # 震荡单空单是否平仓
+                closeShockDownPosition = globalVar['mode'] == 'shockDown' and (
+                        hasTrend(data) != '' or isNearBollUpOrLb(data) == 'up')
+                if closeTrendPosition or closeShockUpPosition or closeShockDownPosition:
                     deleteAllOrder(symbol)
                     deleteAllPosition(symbol)
                     globalVar['piece'] += 1
@@ -96,10 +103,11 @@ def loop():
                 else:
                     res = isNearBollUpOrLb(data)
                     if res == 'up' or res == 'down':
-                        globalVar['mode'] = 'shock'
                         if res == 'up':
+                            globalVar['mode'] = 'shockUp'
                             long(symbol, '0.02', 0.05, 0.01)
                         elif res == 'down':
+                            globalVar['mode'] = 'shockDown'
                             short(symbol, '0.02', 0.05, 0.01)
             time.sleep(5 * 60)
 
