@@ -62,24 +62,45 @@ def trendOver(data):
     return False
 
 
+def isNearBollUpOrLb(data):
+    [MB, UP, LB, PB, BW] = getBoll(data)
+    currentPrice = float(data[-1][4])
+    if LB < currentPrice < UP and (UP - LB) / MB > 0.03:
+        if currentPrice < MB and abs(currentPrice - LB) / LB < 0.002:
+            return 'up'
+        if currentPrice > MB and abs(currentPrice - UP) / UP < 0.002:
+            return 'down'
+    return ''
+
+
 def loop():
     def run():
         while True:
             data = getKline(symbol, interval)
-            # 判断是否有持仓，1则无持仓，0则有持仓
-            if globalVar['piece'] > 0:
-                res = hasTrend(data)
-                if res == 'up':
-                    long(symbol, '0.05', 0.1, 0.01)
-                elif res == 'down':
-                    short(symbol, '0.05', 0.1, 0.01)
-                else:
-                    # 震荡行情算法
-                    pass
-            else:
-                if trendOver(data):
+            # 持仓状态情况下，判断是否应该平仓
+            if globalVar['piece'] == 0:
+                if globalVar['mode'] == 'trend' and trendOver(data) or globalVar['mode'] == 'shock' and hasTrend(
+                        data) != '':
                     deleteAllOrder(symbol)
                     deleteAllPosition(symbol)
+                    globalVar['piece'] += 1
+            # 空仓状态情况下，判断趋势，并判断是否开仓
+            else:
+                res = hasTrend(data)
+                if res == 'up' or res == 'down':
+                    globalVar['mode'] = 'trend'
+                    if res == 'up':
+                        long(symbol, '0.02', 0.1, 0.01)
+                    elif res == 'down':
+                        short(symbol, '0.02', 0.1, 0.01)
+                else:
+                    res = isNearBollUpOrLb(data)
+                    if res == 'up' or res == 'down':
+                        globalVar['mode'] = 'shock'
+                        if res == 'up':
+                            long(symbol, '0.02', 0.05, 0.01)
+                        elif res == 'down':
+                            short(symbol, '0.02', 0.05, 0.01)
             time.sleep(5 * 60)
 
     thread.start_new_thread(run, ())
