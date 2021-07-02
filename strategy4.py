@@ -54,12 +54,13 @@ def hasTrend(data):
     return ''
 
 
-def trendOver(data):
+def trendOver(data, type):
     MA30 = getMA(data, 30)
     # 上一根K线的收盘价
     currentPrice = float(data[-2][4])
-    if currentPrice > MA30 and (currentPrice - MA30) / MA30 > 0.005 or currentPrice < MA30 and (
-            MA30 - currentPrice) / MA30 > 0.005:
+    if (type == 'trendDown' and currentPrice > MA30 and (
+            currentPrice - MA30) / MA30 > 0.005) or (type == 'Up' and currentPrice < MA30 and (
+            MA30 - currentPrice) / MA30 > 0.005):
         return True
     return False
 
@@ -81,15 +82,17 @@ def loop():
             data = getKline(symbol, interval)
             # 持仓状态情况下，判断是否应该平仓
             if globalVar['piece'] == 0:
-                # 趋势单是否平仓
-                closeTrendPosition = globalVar['mode'] == 'trend' and trendOver(data)
+                # 趋势多单是否平仓
+                closeTrendUpPosition = globalVar['mode'] == 'trendUp' and trendOver(data, 'trendUp')
+                # 趋势空单是否平仓
+                closeTrendDownPosition = globalVar['mode'] == 'trendDown' and trendOver(data, 'trendDown')
                 # 震荡单多单是否平仓
                 closeShockUpPosition = globalVar['mode'] == 'shockUp' and (
                         hasTrend(data) != '' or isNearBollUpOrLb(data) == 'down')
                 # 震荡单空单是否平仓
                 closeShockDownPosition = globalVar['mode'] == 'shockDown' and (
                         hasTrend(data) != '' or isNearBollUpOrLb(data) == 'up')
-                if closeTrendPosition or closeShockUpPosition or closeShockDownPosition:
+                if closeTrendUpPosition or closeTrendDownPosition or closeShockUpPosition or closeShockDownPosition:
                     deleteAllOrder(symbol)
                     deleteAllPosition(symbol)
                     globalVar['piece'] += 1
@@ -97,10 +100,11 @@ def loop():
             else:
                 res = hasTrend(data)
                 if res == 'up' or res == 'down':
-                    globalVar['mode'] = 'trend'
                     if res == 'up':
+                        globalVar['mode'] = 'trendUp'
                         long(symbol, '0.02', 0.1, 0.01)
                     elif res == 'down':
+                        globalVar['mode'] = 'trendDown'
                         short(symbol, '0.02', 0.1, 0.01)
                 else:
                     res = isNearBollUpOrLb(data)
