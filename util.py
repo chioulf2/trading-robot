@@ -20,7 +20,7 @@ def getMA(data, N, j=0):
     return sum(float(d[4]) for d in data[-1 - N + j: -1 + j]) / float(N)
 
 
-def getBoll(data, N=20, K=2, j=0):
+def getBoll(data, j=0, N=20, K=2):
     '''
     一般情况下，设定N=20和K=2，这两个数值也是在布林带当中使用最多的。
     在日线图里，N=20其实就是“月均线”（MA20）。

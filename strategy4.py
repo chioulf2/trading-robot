@@ -45,8 +45,10 @@ def dealMsg(message):
 
 def hasTrend(data):
     [MB, UP, LB, PB, BW] = getBoll(data)
+    [preMB, preUP, preLB, prePB, preBW] = getBoll(data, -1)
     currentPrice = float(data[-1][4])
-    if (currentPrice > UP or currentPrice < LB) and abs(currentPrice - MB) / MB > 0.02:
+    if (currentPrice > UP or currentPrice < LB) and 0.08 > abs(UP - LB) / MB > 0.03 and abs(
+            preUP - preLB) / preMB < abs(UP - LB) / MB:
         if currentPrice > UP and abs(currentPrice - UP) / UP > 0.003:
             return 'up'
         if currentPrice < LB and abs(currentPrice - LB) / LB > 0.003:
