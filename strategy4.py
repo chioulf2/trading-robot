@@ -47,7 +47,7 @@ def hasTrend(data):
     [MB, UP, LB, PB, BW] = getBoll(data)
     [preMB, preUP, preLB, prePB, preBW] = getBoll(data, -1)
     currentPrice = float(data[-1][4])
-    if (currentPrice > UP or currentPrice < LB) and 0.08 > abs(UP - LB) / MB > 0.03 and abs(
+    if (currentPrice > UP or currentPrice < LB) and 0.06 > abs(UP - LB) / MB > 0.025 and abs(
             preUP - preLB) / preMB < abs(UP - LB) / MB:
         if currentPrice > UP and abs(currentPrice - UP) / UP > 0.003:
             return 'up'
@@ -71,9 +71,9 @@ def isNearBollUpOrLb(data):
     [MB, UP, LB, PB, BW] = getBoll(data)
     currentPrice = float(data[-1][4])
     if LB < currentPrice < UP and (UP - LB) / MB > 0.03:
-        if currentPrice < MB and abs(currentPrice - LB) / LB < 0.002:
+        if currentPrice < MB and currentPrice < LB * (1 + 0.002):
             return 'up'
-        if currentPrice > MB and abs(currentPrice - UP) / UP < 0.002:
+        if currentPrice > MB and currentPrice > UP * (1 - 0.002):
             return 'down'
     return ''
 
@@ -88,6 +88,8 @@ def loop():
                 closeTrendUpPosition = globalVar['mode'] == 'trendUp' and trendOver(data, 'trendUp')
                 # 趋势空单是否平仓
                 closeTrendDownPosition = globalVar['mode'] == 'trendDown' and trendOver(data, 'trendDown')
+                if closeTrendUpPosition or closeTrendDownPosition:
+                    globalVar['mode'] = 'trendOver'
                 # 震荡单多单是否平仓
                 closeShockUpPosition = globalVar['mode'] == 'shockUp' and (
                         hasTrend(data) != '' or isNearBollUpOrLb(data) == 'down')
@@ -97,6 +99,8 @@ def loop():
                 if closeTrendUpPosition or closeTrendDownPosition or closeShockUpPosition or closeShockDownPosition:
                     deleteAllOrder(symbol)
                     deleteAllPosition(symbol)
+                    notifyService = NotifyService('一键平仓')
+                    notifyService.sendMessageToWeiXin()
                     globalVar['piece'] += 1
             # 空仓状态情况下，判断趋势，并判断是否开仓
             else:
@@ -104,19 +108,20 @@ def loop():
                 if res == 'up' or res == 'down':
                     if res == 'up':
                         globalVar['mode'] = 'trendUp'
-                        long(symbol, '0.02', 0.1, 0.01)
+                        long(symbol, '0.02', 0.05, 0.01)
                     elif res == 'down':
                         globalVar['mode'] = 'trendDown'
-                        short(symbol, '0.02', 0.1, 0.01)
-                else:
+                        short(symbol, '0.02', 0.05, 0.01)
+                elif globalVar['mode'] == 'trendOver' or globalVar['mode'] == 'shockDown' or \
+                        globalVar['mode'] == 'shockUp':
                     res = isNearBollUpOrLb(data)
                     if res == 'up' or res == 'down':
                         if res == 'up':
                             globalVar['mode'] = 'shockUp'
-                            long(symbol, '0.02', 0.05, 0.01)
+                            long(symbol, '0.02', 0.03, 0.01)
                         elif res == 'down':
                             globalVar['mode'] = 'shockDown'
-                            short(symbol, '0.02', 0.05, 0.01)
-            time.sleep(5 * 60)
+                            short(symbol, '0.02', 0.03, 0.01)
+            time.sleep(3 * 60)
 
     thread.start_new_thread(run, ())
