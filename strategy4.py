@@ -58,7 +58,8 @@ def trendOver(data):
     MA30 = getMA(data, 30)
     # 上一根K线的收盘价
     currentPrice = float(data[-2][4])
-    if (currentPrice - MA30) / MA30 > 0.005:
+    if currentPrice > MA30 and (currentPrice - MA30) / MA30 > 0.005 or currentPrice < MA30 and (
+            MA30 - currentPrice) / MA30 > 0.005:
         return True
     return False
 
