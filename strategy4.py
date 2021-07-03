@@ -47,7 +47,7 @@ def hasTrend(data):
     [MB, UP, LB, PB, BW] = getBoll(data)
     [preMB, preUP, preLB, prePB, preBW] = getBoll(data, -1)
     currentPrice = float(data[-1][4])
-    if (currentPrice > UP or currentPrice < LB) and 0.06 > abs(UP - LB) / MB > 0.025 and abs(
+    if (currentPrice > UP or currentPrice < LB) and 0.06 > abs(UP - LB) / MB > 0.02 and abs(
             preUP - preLB) / preMB < abs(UP - LB) / MB:
         if currentPrice > UP and abs(currentPrice - UP) / UP > 0.003:
             return 'up'
