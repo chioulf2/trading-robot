@@ -1,11 +1,5 @@
-import hashlib
-import hmac
-import requests
+from util import *
 from config import *
-
-
-def getTime():
-    return str(int(time.time() * 1000))
 
 
 def getBalance():

@@ -31,7 +31,8 @@ def dealMsg(message):
                      '总运行时长: ' + str(round((time.time() - init_time) / 3600, 2)) + ' 小时',
                      '总盈亏: ' + str(globalVar['balance'] - globalVar['init_balance']) + ' U',
                      '本次开仓时长: ' + str(round((time.time() - globalVar['this_time']) / 3600, 2)) + ' 小时',
-                     '本单盈亏: ' + str(message['o']['rp']) + ' U'])
+                     '本单盈亏: ' + str(message['o']['rp']) + ' U',
+                     '平仓时间: ' + getHumanReadTime()])
                 globalVar['this_time'] = time.time()
                 globalVar['piece'] += 1
                 print(msg)
@@ -99,7 +100,7 @@ def loop():
                 if closeTrendUpPosition or closeTrendDownPosition or closeShockUpPosition or closeShockDownPosition:
                     deleteAllOrder(symbol)
                     deleteAllPosition(symbol)
-                    notifyService = NotifyService('一键平仓')
+                    notifyService = NotifyService('一键平仓, 时间:' + getHumanReadTime())
                     notifyService.sendMessageToWeiXin()
                     globalVar['piece'] += 1
             # 空仓状态情况下，判断趋势，并判断是否开仓

@@ -18,7 +18,7 @@ def long(symbol, quantity, take_profit_scope, stop_scope):
         globalVar['orderMap'][take_profit_orderId] = stop_orderId
         globalVar['orderMap'][stop_orderId] = take_profit_orderId
     globalVar['piece'] -= 1
-    msg = '做多 ' + symbol + ' 量：' + quantity + ' 均价：' + price
+    msg = '做多 ' + symbol + ' 量：' + quantity + ' 均价：' + price + ' 时间：' + getHumanReadTime()
     print(msg)
     notifyService = NotifyService(msg)
     notifyService.sendMessageToWeiXin()
@@ -40,7 +40,7 @@ def short(symbol, quantity, take_profit_scope, stop_scope):
         globalVar['orderMap'][take_profit_orderId] = stop_orderId
         globalVar['orderMap'][stop_orderId] = take_profit_orderId
     globalVar['piece'] -= 1
-    msg = '做空 ' + symbol + ' 量：' + quantity + ' 均价：' + price
+    msg = '做空 ' + symbol + ' 量：' + quantity + ' 均价：' + price + ' 时间：' + getHumanReadTime()
     print(msg)
     notifyService = NotifyService(msg)
     notifyService.sendMessageToWeiXin()
