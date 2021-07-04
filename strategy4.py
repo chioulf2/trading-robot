@@ -48,7 +48,7 @@ def hasTrend(data):
     [MB, UP, LB, PB, BW] = getBoll(data)
     [preMB, preUP, preLB, prePB, preBW] = getBoll(data, -1)
     currentPrice = float(data[-1][4])
-    if (currentPrice > UP or currentPrice < LB) and 0.06 > abs(UP - LB) / MB > 0.02 and abs(
+    if (currentPrice > UP or currentPrice < LB) and 0.05 > abs(UP - LB) / MB > 0.018 and abs(
             preUP - preLB) / preMB < abs(UP - LB) / MB:
         if currentPrice > UP and abs(currentPrice - UP) / UP > 0.003:
             return 'up'
@@ -62,8 +62,8 @@ def trendOver(data, type):
     # 上一根K线的收盘价
     currentPrice = float(data[-2][4])
     if (type == 'trendDown' and currentPrice > MA30 and (
-            currentPrice - MA30) / MA30 > 0.005) or (type == 'Up' and currentPrice < MA30 and (
-            MA30 - currentPrice) / MA30 > 0.005):
+            currentPrice - MA30) / MA30 > 0.003) or (type == 'Up' and currentPrice < MA30 and (
+            MA30 - currentPrice) / MA30 > 0.003):
         return True
     return False
 
