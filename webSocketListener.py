@@ -27,6 +27,7 @@ def on_message(ws, message):
                    message['k']['Q'], message['k']['B']]
         if globalVar['kline'][-1][0] != message['k']['t']:
             globalVar['kline'].append(newItem)
+            del globalVar['kline'][0]
         else:
             globalVar['kline'][-1] = newItem
         strategy()

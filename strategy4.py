@@ -100,7 +100,7 @@ def strategy():
             notifyService.sendMessageToWeiXin()
             globalVar['piece'] += 1
     # 空仓状态情况下，判断趋势，并判断是否开仓
-    else:
+    elif globalVar['piece'] > 0:
         res = hasTrend(data)
         if res == 'up' or res == 'down':
             if res == 'up':
