@@ -3,7 +3,7 @@
 # from strategy1 import *
 import random
 from strategy4 import *
-from webSocketListener import listen
+from webSocketListener import *
 from util import *
 
 
@@ -11,8 +11,11 @@ globalVar['init_balance'] = getBalance()  # 初始资产
 
 
 def main():
-    loop()
-    listen()
+    # 获取历史k线数据
+    data = getKline(symbol, interval)
+    globalVar['kline'] = data
+    # 接下来的k线数据在webSocket中更新
+    listenStreams()
 
 
 main()

@@ -9,8 +9,8 @@ except ImportError:
     import _thread as thread
 
 
-def dealMsg(message):
-    if message['e'] == "ORDER_TRADE_UPDATE" and message['o']['x'] == "TRADE" and message['o']['X'] == "FILLED" and \
+def handleClosePosition(message):
+    if message['o']['x'] == "TRADE" and message['o']['X'] == "FILLED" and \
             (message['o']['ot'] == "STOP_MARKET" or message['o']['ot'] == "LIMIT"):
         def run():
             try:
@@ -40,15 +40,13 @@ def dealMsg(message):
                 notifyService.sendMessageToWeiXin()
 
         thread.start_new_thread(run, ())
-    elif message['e'] == "ACCOUNT_UPDATE":
-        globalVar['balance'] = float(message['a']['B'][0]['wb'])
 
 
 def hasTrend(data):
     [MB, UP, LB, PB, BW] = getBoll(data)
     [preMB, preUP, preLB, prePB, preBW] = getBoll(data, -1)
     currentPrice = float(data[-1][4])
-    if (currentPrice > UP or currentPrice < LB) and 0.05 > abs(UP - LB) / MB > 0.018 and abs(
+    if (currentPrice > UP or currentPrice < LB) and 0.05 > abs(UP - LB) / MB > 0.01 and abs(
             preUP - preLB) / preMB < abs(UP - LB) / MB:
         if currentPrice > UP and abs(currentPrice - UP) / UP > 0.003:
             return 'up'
@@ -79,50 +77,45 @@ def isNearBollUpOrLb(data):
     return ''
 
 
-def loop():
-    def run():
-        while True:
-            data = getKline(symbol, interval)
-            # 持仓状态情况下，判断是否应该平仓
-            if globalVar['piece'] == 0:
-                # 趋势多单是否平仓
-                closeTrendUpPosition = globalVar['mode'] == 'trendUp' and trendOver(data, 'trendUp')
-                # 趋势空单是否平仓
-                closeTrendDownPosition = globalVar['mode'] == 'trendDown' and trendOver(data, 'trendDown')
-                if closeTrendUpPosition or closeTrendDownPosition:
-                    globalVar['mode'] = 'trendOver'
-                # 震荡单多单是否平仓
-                closeShockUpPosition = globalVar['mode'] == 'shockUp' and (
-                        hasTrend(data) != '' or isNearBollUpOrLb(data) == 'down')
-                # 震荡单空单是否平仓
-                closeShockDownPosition = globalVar['mode'] == 'shockDown' and (
-                        hasTrend(data) != '' or isNearBollUpOrLb(data) == 'up')
-                if closeTrendUpPosition or closeTrendDownPosition or closeShockUpPosition or closeShockDownPosition:
-                    deleteAllOrder(symbol)
-                    deleteAllPosition(symbol)
-                    notifyService = NotifyService('一键平仓, 时间:' + getHumanReadTime())
-                    notifyService.sendMessageToWeiXin()
-                    globalVar['piece'] += 1
-            # 空仓状态情况下，判断趋势，并判断是否开仓
-            else:
-                res = hasTrend(data)
-                if res == 'up' or res == 'down':
-                    if res == 'up':
-                        globalVar['mode'] = 'trendUp'
-                        long(symbol, '0.02', 0.05, 0.01)
-                    elif res == 'down':
-                        globalVar['mode'] = 'trendDown'
-                        short(symbol, '0.02', 0.05, 0.01)
-                elif globalVar['mode'] == 'trendOver' or globalVar['mode'] == 'shockDown' or \
-                        globalVar['mode'] == 'shockUp':
-                    res = isNearBollUpOrLb(data)
-                    if res == 'up' or res == 'down':
-                        if res == 'up':
-                            globalVar['mode'] = 'shockUp'
-                            long(symbol, '0.02', 0.03, 0.01)
-                        elif res == 'down':
-                            globalVar['mode'] = 'shockDown'
-                            short(symbol, '0.02', 0.03, 0.01)
-            time.sleep(3 * 60)
-
-    thread.start_new_thread(run, ())
+def strategy():
+    data = globalVar['kline']
+    # 持仓状态情况下，判断是否应该平仓
+    if globalVar['piece'] == 0:
+        # 趋势多单是否平仓
+        closeTrendUpPosition = globalVar['mode'] == 'trendUp' and trendOver(data, 'trendUp')
+        # 趋势空单是否平仓
+        closeTrendDownPosition = globalVar['mode'] == 'trendDown' and trendOver(data, 'trendDown')
+        if closeTrendUpPosition or closeTrendDownPosition:
+            globalVar['mode'] = 'trendOver'
+        # 震荡单多单是否平仓
+        closeShockUpPosition = globalVar['mode'] == 'shockUp' and (
+                hasTrend(data) != '' or isNearBollUpOrLb(data) == 'down')
+        # 震荡单空单是否平仓
+        closeShockDownPosition = globalVar['mode'] == 'shockDown' and (
+                hasTrend(data) != '' or isNearBollUpOrLb(data) == 'up')
+        if closeTrendUpPosition or closeTrendDownPosition or closeShockUpPosition or closeShockDownPosition:
+            deleteAllOrder(symbol)
+            deleteAllPosition(symbol)
+            notifyService = NotifyService('一键平仓, 时间:' + getHumanReadTime())
+            notifyService.sendMessageToWeiXin()
+            globalVar['piece'] += 1
+    # 空仓状态情况下，判断趋势，并判断是否开仓
+    else:
+        res = hasTrend(data)
+        if res == 'up' or res == 'down':
+            if res == 'up':
+                globalVar['mode'] = 'trendUp'
+                long(symbol, quantity, 0.05, 0.01)
+            elif res == 'down':
+                globalVar['mode'] = 'trendDown'
+                short(symbol, quantity, 0.05, 0.01)
+        elif globalVar['mode'] == 'trendOver' or globalVar['mode'] == 'shockDown' or \
+                globalVar['mode'] == 'shockUp':
+            res = isNearBollUpOrLb(data)
+            if res == 'up' or res == 'down':
+                if res == 'up':
+                    globalVar['mode'] = 'shockUp'
+                    long(symbol, quantity, 0.03, 0.01)
+                elif res == 'down':
+                    globalVar['mode'] = 'shockDown'
+                    short(symbol, quantity, 0.03, 0.01)
