@@ -34,7 +34,7 @@ def handleClosePosition(message):
                      '本单盈亏: ' + str(message['o']['rp']) + ' U',
                      '平仓时间: ' + getHumanReadTime()])
                 globalVar['this_time'] = time.time()
-                globalVar['piece'] += 1
+                globalVar['position'] = False
                 print(msg)
                 notifyService = NotifyService(msg)
                 notifyService.sendMessageToWeiXin()
@@ -46,7 +46,7 @@ def hasTrend(data):
     [MB, UP, LB, PB, BW] = getBoll(data)
     [preMB, preUP, preLB, prePB, preBW] = getBoll(data, -1)
     currentPrice = float(data[-1][4])
-    if (currentPrice > UP or currentPrice < LB) and 0.05 > abs(UP - LB) / MB > 0.01 and abs(
+    if (currentPrice > UP or currentPrice < LB) and 0.04 > abs(UP - LB) / MB > 0.01 and abs(
             preUP - preLB) / preMB < abs(UP - LB) / MB:
         if currentPrice > UP and abs(currentPrice - UP) / UP > 0.003:
             return 'up'
@@ -80,7 +80,7 @@ def isNearBollUpOrLb(data):
 def strategy():
     data = globalVar['kline']
     # 持仓状态情况下，判断是否应该平仓
-    if globalVar['piece'] == 0:
+    if globalVar['position']:
         # 趋势多单是否平仓
         closeTrendUpPosition = globalVar['mode'] == 'trendUp' and trendOver(data, 'trendUp')
         # 趋势空单是否平仓
@@ -98,9 +98,9 @@ def strategy():
             deleteAllPosition(symbol)
             notifyService = NotifyService('一键平仓, 时间:' + getHumanReadTime())
             notifyService.sendMessageToWeiXin()
-            globalVar['piece'] += 1
+            globalVar['position'] = False
     # 空仓状态情况下，判断趋势，并判断是否开仓
-    elif globalVar['piece'] > 0:
+    elif not globalVar['position']:
         res = hasTrend(data)
         if res == 'up' or res == 'down':
             if res == 'up':

@@ -19,4 +19,4 @@ init_time = time.time()  # 开机时间
 interval = '15m'  # 15分钟k线
 # 盈利次数，亏损次数，当前时间，当前资产，止盈止损订单对
 globalVar = {'init_balance': 0, 'profit_count': 0, 'loss_count': 0, 'this_time': init_time, 'balance': 0, 'pivot': 0.5,
-             'orderMap': {}, 'piece': 1, 'mode': 'trend', 'kline': [], 'ws': []}
+             'orderMap': {}, 'piece': 1, 'position': False, 'mode': 'trend', 'kline': [], 'ws': []}

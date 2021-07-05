@@ -3,6 +3,9 @@ from notify import *
 
 
 def long(symbol, quantity, take_profit_scope, stop_scope):
+    if globalVar['position']:
+        return
+    globalVar['position'] = True
     level(symbol, leverage)
     longOrderId = order(symbol, 'BUY', 'LONG', 'MARKET', quantity, '')['orderId']
     price = getOrderPrice(symbol, longOrderId)
@@ -17,7 +20,6 @@ def long(symbol, quantity, take_profit_scope, stop_scope):
         take_profit_orderId = order(symbol, 'SELL', 'LONG', 'LIMIT', quantity, take_profit_price)['orderId']
         globalVar['orderMap'][take_profit_orderId] = stop_orderId
         globalVar['orderMap'][stop_orderId] = take_profit_orderId
-    globalVar['piece'] -= 1
     msg = '做多 ' + symbol + ' 量：' + quantity + ' 均价：' + price + ' 时间：' + getHumanReadTime()
     print(msg)
     notifyService = NotifyService(msg)
@@ -25,6 +27,9 @@ def long(symbol, quantity, take_profit_scope, stop_scope):
 
 
 def short(symbol, quantity, take_profit_scope, stop_scope):
+    if globalVar['position']:
+        return
+    globalVar['position'] = True
     level(symbol, leverage)
     shortOrderId = order(symbol, 'SELL', 'SHORT', 'MARKET', quantity, '')['orderId']
     price = getOrderPrice(symbol, shortOrderId)
@@ -39,7 +44,6 @@ def short(symbol, quantity, take_profit_scope, stop_scope):
         take_profit_orderId = order(symbol, 'BUY', 'SHORT', 'LIMIT', quantity, take_profit_price)['orderId']
         globalVar['orderMap'][take_profit_orderId] = stop_orderId
         globalVar['orderMap'][stop_orderId] = take_profit_orderId
-    globalVar['piece'] -= 1
     msg = '做空 ' + symbol + ' 量：' + quantity + ' 均价：' + price + ' 时间：' + getHumanReadTime()
     print(msg)
     notifyService = NotifyService(msg)
