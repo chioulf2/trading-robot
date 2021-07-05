@@ -15,7 +15,9 @@ def on_message(ws, message):
     message = json.loads(message)
     if message['e'] == "listenKeyExpired":
         print('listenKey过期')
-        ws.close()
+        for w in globalVar['ws']:
+            w.close()
+        globalVar['ws'] = []
         listenStreams()
     elif message['e'] == 'ACCOUNT_UPDATE':
         globalVar['balance'] = float(message['a']['B'][0]['wb'])
@@ -66,6 +68,7 @@ def listen(streamName):
                                 on_open=on_open,
                                 on_close=on_close)
     print('重启WebSocket')
+    globalVar['ws'].append(ws)
     ws.run_forever(sslopt={"check_hostname": False})
 
 
