@@ -2,6 +2,7 @@ import hmac
 import hashlib
 import websocket
 import requests
+from util import getHumanReadTime
 from config import *
 from strategy4 import strategy, handleClosePosition
 
@@ -14,7 +15,7 @@ except ImportError:
 def on_message(ws, message):
     message = json.loads(message)
     if message['e'] == "listenKeyExpired":
-        print('listenKey过期')
+        print('listenKey过期 ', getHumanReadTime())
         for w in globalVar['ws']:
             w.close()
         globalVar['ws'] = []
