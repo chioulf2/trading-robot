@@ -13,7 +13,6 @@ except ImportError:
 
 def on_message(ws, message):
     message = json.loads(message)
-    print(message)
     if message['e'] == "listenKeyExpired":
         print('listenKey过期')
         ws.close()
