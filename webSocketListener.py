@@ -14,17 +14,21 @@ except ImportError:
 
 def on_message(ws, message):
     message = json.loads(message)
+    # print(message)
+    message = message['data']
     if message['e'] == "listenKeyExpired":
         print('listenKey过期 ', getHumanReadTime())
-        for w in globalVar['ws']:
-            w.close()
-        globalVar['ws'] = []
+        # for w in globalVar['ws']:
+        #     w.close()
+        # globalVar['ws'] = []
+        ws.close()
         listenStreams()
     elif message['e'] == 'ACCOUNT_UPDATE':
         globalVar['balance'] = float(message['a']['B'][0]['wb'])
     elif message['e'] == "ORDER_TRADE_UPDATE":
         handleClosePosition(message)
     elif message['e'] == "kline":
+        print(message)
         newItem = [message['k']['t'], message['k']['o'], message['k']['h'], message['k']['l'], message['k']['c'],
                    message['k']['v'], message['k']['T'], message['k']['q'], message['k']['n'], message['k']['V'],
                    message['k']['Q'], message['k']['B']]
@@ -61,15 +65,16 @@ def getListenKey():
     return content['listenKey']
 
 
-def listen(streamName):
+def listen(streamNameArr):
+    streamNames = '/'.join(streamNameArr)
     websocket.enableTrace(True)
-    ws = websocket.WebSocketApp("wss://fstream.binance.com/ws/" + streamName,
+    ws = websocket.WebSocketApp("wss://fstream.binance.com/stream?streams=" + streamNames,
                                 on_message=on_message,
                                 on_error=on_error,
                                 on_open=on_open,
                                 on_close=on_close)
     print('重启WebSocket')
-    globalVar['ws'].append(ws)
+    # globalVar['ws'].append(ws)
     ws.run_forever(sslopt={"check_hostname": False})
 
 
@@ -77,8 +82,8 @@ def listenStreams():
     listenKey = getListenKey()
     kline = symbol.lower() + '@kline_' + '15m'
 
-    def run():
-        listen(kline)
+    # def run():
+    #     listen(kline)
 
-    thread.start_new_thread(run, ())
-    listen(listenKey)
+    # thread.start_new_thread(run, ())
+    listen([listenKey, kline])
