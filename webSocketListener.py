@@ -28,7 +28,7 @@ def on_message(ws, message):
     elif message['e'] == "ORDER_TRADE_UPDATE":
         handleClosePosition(message)
     elif message['e'] == "kline":
-        print(message)
+        # print(message)
         newItem = [message['k']['t'], message['k']['o'], message['k']['h'], message['k']['l'], message['k']['c'],
                    message['k']['v'], message['k']['T'], message['k']['q'], message['k']['n'], message['k']['V'],
                    message['k']['Q'], message['k']['B']]
