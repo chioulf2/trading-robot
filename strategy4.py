@@ -11,7 +11,8 @@ except ImportError:
 
 def handleClosePosition(message):
     if message['o']['x'] == "TRADE" and message['o']['X'] == "FILLED" and \
-            (message['o']['ot'] == "STOP_MARKET" or message['o']['ot'] == "LIMIT"):
+            (message['o']['ot'] == "STOP_MARKET" or message['o']['ot'] == "TRAILING_STOP_MARKET" or message['o'][
+                'ot'] == "LIMIT"):
         def run():
             try:
                 orderId = globalVar['orderMap'][message['o']['i']]
@@ -20,24 +21,23 @@ def handleClosePosition(message):
             except Exception as e:
                 print(e)
             globalVar['orderMap'].pop(message['o']['i'])
-            if message['o']['ot'] == "STOP_MARKET" or message['o']['ot'] == "LIMIT":
-                if message['o']['ot'] == "STOP_MARKET":
-                    globalVar['loss_count'] += 1
-                elif message['o']['ot'] == "LIMIT":
-                    globalVar['profit_count'] += 1
-                msg = '\n'.join(
-                    ['盈利次数: ' + str(globalVar['profit_count']) + ' 次',
-                     '亏损次数: ' + str(globalVar['loss_count']) + ' 次',
-                     '总运行时长: ' + str(round((time.time() - init_time) / 3600, 2)) + ' 小时',
-                     '总盈亏: ' + str(globalVar['balance'] - globalVar['init_balance']) + ' U',
-                     '本次开仓时长: ' + str(round((time.time() - globalVar['this_time']) / 3600, 2)) + ' 小时',
-                     '本单盈亏: ' + str(message['o']['rp']) + ' U',
-                     '平仓时间: ' + getHumanReadTime()])
-                globalVar['this_time'] = time.time()
-                globalVar['position'] = False
-                print(msg)
-                notifyService = NotifyService(msg)
-                notifyService.sendMessageToWeiXin()
+            if message['o']['ot'] == "STOP_MARKET":
+                globalVar['loss_count'] += 1
+            elif message['o']['ot'] == "LIMIT" or message['o']['ot'] == "TRAILING_STOP_MARKET":
+                globalVar['profit_count'] += 1
+            msg = '\n'.join(
+                ['盈利次数: ' + str(globalVar['profit_count']) + ' 次',
+                 '亏损次数: ' + str(globalVar['loss_count']) + ' 次',
+                 '总运行时长: ' + str(round((time.time() - init_time) / 3600, 2)) + ' 小时',
+                 '总盈亏: ' + str(globalVar['balance'] - globalVar['init_balance']) + ' U',
+                 '本次开仓时长: ' + str(round((time.time() - globalVar['this_time']) / 3600, 2)) + ' 小时',
+                 '本单盈亏: ' + str(message['o']['rp']) + ' U',
+                 '平仓时间: ' + getHumanReadTime()])
+            globalVar['this_time'] = time.time()
+            globalVar['position'] = False
+            print(msg)
+            notifyService = NotifyService(msg)
+            notifyService.sendMessageToWeiXin()
 
         thread.start_new_thread(run, ())
 
