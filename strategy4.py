@@ -18,9 +18,9 @@ def handleClosePosition(message):
                 orderId = globalVar['orderMap'][message['o']['i']]
                 deleteOrder(symbol, orderId)
                 globalVar['orderMap'].pop(orderId)
+                globalVar['orderMap'].pop(message['o']['i'])
             except Exception as e:
                 print(e)
-            globalVar['orderMap'].pop(message['o']['i'])
             if message['o']['ot'] == "STOP_MARKET":
                 globalVar['loss_count'] += 1
             elif message['o']['ot'] == "LIMIT" or message['o']['ot'] == "TRAILING_STOP_MARKET":
