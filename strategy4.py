@@ -48,12 +48,15 @@ def hasTrend(data):
     currentPrice = float(data[-1][4])
     if (currentPrice > UP or currentPrice < LB) and 0.035 > BW > 0.02 and preBW < BW:
         msg = '当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
-        print(msg)
-        notifyService = NotifyService(msg)
-        notifyService.sendMessageToWeiXin()
         if currentPrice > UP and abs(currentPrice - UP) / UP > 0.006:
+            print(msg)
+            notifyService = NotifyService(msg)
+            notifyService.sendMessageToWeiXin()
             return 'up'
         if currentPrice < LB and abs(currentPrice - LB) / LB > 0.006:
+            print(msg)
+            notifyService = NotifyService(msg)
+            notifyService.sendMessageToWeiXin()
             return 'down'
     return ''
 
@@ -78,12 +81,15 @@ def isNearBollUpOrLb(data):
     currentPrice = float(data[-1][4])
     if LB < currentPrice < UP and (UP - LB) / MB > 0.03:
         msg = '当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
-        print(msg)
-        notifyService = NotifyService(msg)
-        notifyService.sendMessageToWeiXin()
         if currentPrice < MB and currentPrice < LB * (1 + 0.002):
+            print(msg)
+            notifyService = NotifyService(msg)
+            notifyService.sendMessageToWeiXin()
             return 'up'
         if currentPrice > MB and currentPrice > UP * (1 - 0.002):
+            print(msg)
+            notifyService = NotifyService(msg)
+            notifyService.sendMessageToWeiXin()
             return 'down'
     return ''
 
