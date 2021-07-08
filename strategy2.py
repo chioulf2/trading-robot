@@ -10,7 +10,8 @@ except ImportError:
 
 
 def dealMsg(message):
-    if message['e'] == "ORDER_TRADE_UPDATE" and message['o']['x'] == "TRADE" and message['o']['X'] == "FILLED" and \
+    if message['e'] == "ORDER_TRADE_UPDATE" and message['o']['x'] == "TRADE" and (
+            message['o']['X'] == "FILLED" or message['o']['X'] == "PARTIALLY_FILLED") and \
             (message['o']['ot'] == "STOP_MARKET" or message['o']['ot'] == "LIMIT"):
         def run():
             try:

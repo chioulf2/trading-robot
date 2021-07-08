@@ -10,7 +10,7 @@ except ImportError:
 
 
 def handleClosePosition(message):
-    if message['o']['x'] == "TRADE" and message['o']['X'] == "FILLED" and \
+    if message['o']['x'] == "TRADE" and (message['o']['X'] == "FILLED" or message['o']['X'] == "PARTIALLY_FILLED") and \
             (message['o']['ot'] == "STOP_MARKET" or message['o']['ot'] == "TRAILING_STOP_MARKET" or message['o'][
                 'ot'] == "LIMIT"):
         def run():
