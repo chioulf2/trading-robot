@@ -105,17 +105,17 @@ def strategy():
         if res == 'up' or res == 'down':
             if res == 'up':
                 globalVar['mode'] = 'trendUp'
-                long(symbol, quantity, 0.02, 0.01)
+                long(symbol, quantity, 0.05, 0.01)
             elif res == 'down':
                 globalVar['mode'] = 'trendDown'
-                short(symbol, quantity, 0.02, 0.01)
+                short(symbol, quantity, 0.05, 0.01)
         elif globalVar['mode'] == 'trendOver' or globalVar['mode'] == 'shockDown' or \
                 globalVar['mode'] == 'shockUp':
             res = isNearBollUpOrLb(data)
             if res == 'up' or res == 'down':
                 if res == 'up':
                     globalVar['mode'] = 'shockUp'
-                    long(symbol, quantity, 0.02, 0.01)
+                    long(symbol, quantity, 0.03, 0.01)
                 elif res == 'down':
                     globalVar['mode'] = 'shockDown'
-                    short(symbol, quantity, 0.02, 0.01)
+                    short(symbol, quantity, 0.03, 0.01)
