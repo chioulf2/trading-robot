@@ -46,7 +46,7 @@ def hasTrend(data):
     [MB, UP, LB, PB, BW] = getBoll(data)
     [preMB, preUP, preLB, prePB, preBW] = getBoll(data, -1)
     currentPrice = float(data[-1][4])
-    if (currentPrice > UP or currentPrice < LB) and 0.035 > BW > 0.02 and preBW < BW:
+    if (currentPrice > UP or currentPrice < LB) and preBW < BW < 0.035:
         if currentPrice > UP and abs(currentPrice - UP) / UP > 0.006:
             msg = '趋势开多 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
             print(msg)
@@ -124,17 +124,17 @@ def strategy():
         if res == 'up' or res == 'down':
             if res == 'up':
                 globalVar['mode'] = 'trendUp'
-                long(symbol, quantity, 0.05, 0.01)
+                long(symbol, quantity, 0.02, 0.01)
             elif res == 'down':
                 globalVar['mode'] = 'trendDown'
-                short(symbol, quantity, 0.05, 0.01)
+                short(symbol, quantity, 0.02, 0.01)
         elif globalVar['mode'] == 'trendOver' or globalVar['mode'] == 'shockDown' or \
                 globalVar['mode'] == 'shockUp':
             res = isNearBollUpOrLb(data)
             if res == 'up' or res == 'down':
                 if res == 'up':
                     globalVar['mode'] = 'shockUp'
-                    long(symbol, quantity, 0.03, 0.01)
+                    long(symbol, quantity, 0.02, 0.01)
                 elif res == 'down':
                     globalVar['mode'] = 'shockDown'
-                    short(symbol, quantity, 0.03, 0.01)
+                    short(symbol, quantity, 0.02, 0.01)
