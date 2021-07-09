@@ -47,13 +47,14 @@ def hasTrend(data):
     [preMB, preUP, preLB, prePB, preBW] = getBoll(data, -1)
     currentPrice = float(data[-1][4])
     if (currentPrice > UP or currentPrice < LB) and 0.035 > BW > 0.02 and preBW < BW:
-        msg = '当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
         if currentPrice > UP and abs(currentPrice - UP) / UP > 0.006:
+            msg = '趋势开多 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
             print(msg)
             notifyService = NotifyService(msg)
             notifyService.sendMessageToWeiXin()
             return 'up'
         if currentPrice < LB and abs(currentPrice - LB) / LB > 0.006:
+            msg = '趋势开空 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
             print(msg)
             notifyService = NotifyService(msg)
             notifyService.sendMessageToWeiXin()
@@ -68,7 +69,7 @@ def trendOver(data, type):
     if (type == 'trendDown' and currentPrice > MA30 and (
             currentPrice - MA30) / MA30 > 0.003) or (type == 'Up' and currentPrice < MA30 and (
             MA30 - currentPrice) / MA30 > 0.003):
-        msg = '当前价格: ' + str(currentPrice) + ' MA30: ' + str(MA30)
+        msg = '趋势结束 当前价格: ' + str(currentPrice) + ' MA30: ' + str(MA30)
         print(msg)
         notifyService = NotifyService(msg)
         notifyService.sendMessageToWeiXin()
@@ -80,13 +81,14 @@ def isNearBollUpOrLb(data):
     [MB, UP, LB, PB, BW] = getBoll(data)
     currentPrice = float(data[-1][4])
     if LB < currentPrice < UP and (UP - LB) / MB > 0.03:
-        msg = '当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
         if currentPrice < MB and currentPrice < LB * (1 + 0.002):
+            msg = '震荡开单做多 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
             print(msg)
             notifyService = NotifyService(msg)
             notifyService.sendMessageToWeiXin()
             return 'up'
         if currentPrice > MB and currentPrice > UP * (1 - 0.002):
+            msg = '震荡开单做空 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
             print(msg)
             notifyService = NotifyService(msg)
             notifyService.sendMessageToWeiXin()
