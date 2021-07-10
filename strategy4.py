@@ -9,11 +9,11 @@ except ImportError:
     import _thread as thread
 
 
-def long():
+def doLong():
     long(symbol, quantity, 0.02, 0.01)
 
 
-def short():
+def doShort():
     short(symbol, quantity, 0.02, 0.01)
 
 
@@ -57,7 +57,7 @@ def trend(data):
             if globalVar['mode'] != 'trendUp':
                 clearPosition()
             if not globalVar['position']:
-                long()
+                doLong()
             globalVar['mode'] = 'trendUp'
             msg = '趋势开多 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
             notify(msg)
@@ -66,7 +66,7 @@ def trend(data):
             if globalVar['mode'] != 'trendDown':
                 clearPosition()
             if not globalVar['position']:
-                short()
+                doShort()
             globalVar['mode'] = 'trendDown'
             msg = '趋势开空 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
             notify(msg)
@@ -97,7 +97,7 @@ def shock(data):
             if globalVar['mode'] != 'shockUp':
                 clearPosition()
             if not globalVar['position']:
-                long()
+                doLong()
             globalVar['mode'] = 'shockUp'
             msg = '震荡开单做多 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
             notify(msg)
@@ -106,7 +106,7 @@ def shock(data):
             if globalVar['mode'] != 'shockDown':
                 clearPosition()
             if not globalVar['position']:
-                short()
+                doShort()
             globalVar['mode'] = 'shockDown'
             msg = '震荡开单做空 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
             notify(msg)
