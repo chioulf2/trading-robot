@@ -26,9 +26,7 @@ def long(symbol, quantity, take_profit_scope, stop_scope):
     except Exception as e:
         print(e)
     msg = '做多 ' + symbol + ' 量：' + quantity + ' 均价：' + price + ' 时间：' + getHumanReadTime()
-    print(msg)
-    notifyService = NotifyService(msg)
-    notifyService.sendMessageToWeiXin()
+    notify(msg)
 
 
 def short(symbol, quantity, take_profit_scope, stop_scope):
@@ -55,6 +53,4 @@ def short(symbol, quantity, take_profit_scope, stop_scope):
     except Exception as e:
         print(e)
     msg = '做空 ' + symbol + ' 量：' + quantity + ' 均价：' + price + ' 时间：' + getHumanReadTime()
-    print(msg)
-    notifyService = NotifyService(msg)
-    notifyService.sendMessageToWeiXin()
+    notify(msg)
