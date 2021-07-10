@@ -58,18 +58,18 @@ def trend(data):
                 clearPosition()
             if not globalVar['position']:
                 doLong()
+                msg = '趋势开多 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
+                notify(msg)
             globalVar['mode'] = 'trendUp'
-            msg = '趋势开多 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
-            notify(msg)
             return 'up'
         if currentPrice < LB and abs(currentPrice - LB) / LB > 0.006:
             if globalVar['mode'] != 'trendDown':
                 clearPosition()
             if not globalVar['position']:
                 doShort()
+                msg = '趋势开空 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
+                notify(msg)
             globalVar['mode'] = 'trendDown'
-            msg = '趋势开空 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
-            notify(msg)
             return 'down'
     return ''
 
@@ -98,18 +98,18 @@ def shock(data):
                 clearPosition()
             if not globalVar['position']:
                 doLong()
+                msg = '震荡开单做多 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
+                notify(msg)
             globalVar['mode'] = 'shockUp'
-            msg = '震荡开单做多 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
-            notify(msg)
             return 'up'
         if currentPrice > MB and currentPrice > UP * (1 - 0.002):
             if globalVar['mode'] != 'shockDown':
                 clearPosition()
             if not globalVar['position']:
                 doShort()
+                msg = '震荡开单做空 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
+                notify(msg)
             globalVar['mode'] = 'shockDown'
-            msg = '震荡开单做空 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
-            notify(msg)
             return 'down'
     return ''
 
