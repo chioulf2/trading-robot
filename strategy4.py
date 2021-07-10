@@ -92,7 +92,7 @@ def trendOver(data):
 def shock(data):
     [MB, UP, LB, PB, BW] = getBoll(data)
     currentPrice = float(data[-1][4])
-    if globalVar['trendOver'] and LB < currentPrice < UP and (UP - LB) / MB > 0.03:
+    if globalVar['mode'] == 'trendOver' and LB < currentPrice < UP and (UP - LB) / MB > 0.03:
         if currentPrice < MB and currentPrice < LB * (1 + 0.002):
             if globalVar['mode'] != 'shockUp':
                 clearPosition()
