@@ -56,20 +56,20 @@ def trend(data):
         if currentPrice > UP and abs(currentPrice - UP) / UP > 0.006:
             if globalVar['mode'] != 'trendUp':
                 clearPosition()
+            globalVar['mode'] = 'trendUp'
             if not globalVar['position']:
                 doLong()
                 msg = '趋势开多 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
                 notify(msg)
-            globalVar['mode'] = 'trendUp'
             return 'up'
         if currentPrice < LB and abs(currentPrice - LB) / LB > 0.006:
             if globalVar['mode'] != 'trendDown':
                 clearPosition()
+            globalVar['mode'] = 'trendDown'
             if not globalVar['position']:
                 doShort()
                 msg = '趋势开空 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
                 notify(msg)
-            globalVar['mode'] = 'trendDown'
             return 'down'
     return ''
 
@@ -96,20 +96,20 @@ def shock(data):
         if currentPrice < MB and currentPrice < LB * (1 + 0.002):
             if globalVar['mode'] != 'shockUp':
                 clearPosition()
+            globalVar['mode'] = 'shockUp'
             if not globalVar['position']:
                 doLong()
                 msg = '震荡开单做多 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
                 notify(msg)
-            globalVar['mode'] = 'shockUp'
             return 'up'
         if currentPrice > MB and currentPrice > UP * (1 - 0.002):
             if globalVar['mode'] != 'shockDown':
                 clearPosition()
+            globalVar['mode'] = 'shockDown'
             if not globalVar['position']:
                 doShort()
                 msg = '震荡开单做空 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
                 notify(msg)
-            globalVar['mode'] = 'shockDown'
             return 'down'
     return ''
 
@@ -119,7 +119,8 @@ def clearPosition():
         globalVar['position'] = False
         deleteAllOrder(symbol)
         deleteAllPosition(symbol)
-        notify('一键平仓, 时间:' + getHumanReadTime())
+        msg = ' 总盈亏: ' + str(globalVar['balance'] - globalVar['init_balance']) + ' U'
+        notify('一键平仓, 时间: ' + getHumanReadTime() + msg)
 
 
 def strategy():
