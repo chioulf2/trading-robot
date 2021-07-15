@@ -97,10 +97,11 @@ def shock(data):
 
 
 def clearPosition():
-    if globalVar['position']:
+    if globalVar['position'] and round((time.time() - globalVar['this_time']) / 15 * 60, 2) > 1:
         globalVar['position'] = False
         deleteAllOrder(symbol)
         deleteAllPosition(symbol)
+        globalVar['this_time'] = time.time()
         msg = ' 总盈亏: ' + str(globalVar['balance'] - globalVar['init_balance']) + ' U'
         notify('一键平仓, 时间: ' + getHumanReadTime() + msg)
 
