@@ -83,12 +83,14 @@ def shock(data):
     currentPrice = float(data[-1][4])
     if LB < currentPrice < UP and (UP - LB) / MB > 0.02:
         if currentPrice < MB and currentPrice < LB * (1 + 0.002):
-            msg = '震荡开单做多 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
-            notify(msg)
+            if globalVar['mode'] == 'shockUp':
+                msg = '震荡开单做多 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
+                notify(msg)
             return 'LB'
         if currentPrice > MB and currentPrice > UP * (1 - 0.002):
-            msg = '震荡开单做空 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
-            notify(msg)
+            if globalVar['mode'] == 'shockDown':
+                msg = '震荡开单做空 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
+                notify(msg)
             return 'UP'
     return ''
 
