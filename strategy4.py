@@ -119,10 +119,10 @@ def strategy():
     else:
         if globalVar['mode'] == 'trendOver' and shock(data) == 'UP':
             globalVar['mode'] = 'shockDown'
-            doLong()
+            doShort()
         elif globalVar['mode'] == 'trendOver' and shock(data) == 'LB':
             globalVar['mode'] = 'shockUp'
-            doShort()
+            doLong()
         elif trend(data) == 'up':
             globalVar['mode'] = 'trendUp'
             doLong()
