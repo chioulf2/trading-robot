@@ -54,22 +54,12 @@ def trend(data):
     currentPrice = float(data[-1][4])
     if (currentPrice > UP or currentPrice < LB) and preBW < BW < 0.035:
         if currentPrice > UP and abs(currentPrice - UP) / UP > 0.006:
-            if globalVar['mode'] != 'trendUp':
-                clearPosition()
-            globalVar['mode'] = 'trendUp'
-            if not globalVar['position']:
-                doLong()
-                msg = '趋势开多 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
-                notify(msg)
+            msg = '趋势开多 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
+            notify(msg)
             return 'up'
         if currentPrice < LB and abs(currentPrice - LB) / LB > 0.006:
-            if globalVar['mode'] != 'trendDown':
-                clearPosition()
-            globalVar['mode'] = 'trendDown'
-            if not globalVar['position']:
-                doShort()
-                msg = '趋势开空 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
-                notify(msg)
+            msg = '趋势开空 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
+            notify(msg)
             return 'down'
     return ''
 
@@ -82,7 +72,6 @@ def trendOver(data):
             currentPrice - MA30) / MA30 > 0.003) or (globalVar['mode'] == 'trendUp' and currentPrice < MA30 and (
             MA30 - currentPrice) / MA30 > 0.003):
         globalVar['mode'] = 'trendOver'
-        clearPosition()
         msg = '趋势结束 当前价格: ' + str(currentPrice) + ' MA30: ' + str(MA30)
         notify(msg)
         return True
@@ -92,25 +81,15 @@ def trendOver(data):
 def shock(data):
     [MB, UP, LB, PB, BW] = getBoll(data)
     currentPrice = float(data[-1][4])
-    if globalVar['mode'] == 'trendOver' and LB < currentPrice < UP and (UP - LB) / MB > 0.02:
+    if LB < currentPrice < UP and (UP - LB) / MB > 0.02:
         if currentPrice < MB and currentPrice < LB * (1 + 0.002):
-            if globalVar['mode'] != 'shockUp':
-                clearPosition()
-            globalVar['mode'] = 'shockUp'
-            if not globalVar['position']:
-                doLong()
-                msg = '震荡开单做多 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
-                notify(msg)
-            return 'up'
+            msg = '震荡开单做多 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
+            notify(msg)
+            return 'LB'
         if currentPrice > MB and currentPrice > UP * (1 - 0.002):
-            if globalVar['mode'] != 'shockDown':
-                clearPosition()
-            globalVar['mode'] = 'shockDown'
-            if not globalVar['position']:
-                doShort()
-                msg = '震荡开单做空 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
-                notify(msg)
-            return 'down'
+            msg = '震荡开单做空 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
+            notify(msg)
+            return 'UP'
     return ''
 
 
@@ -125,6 +104,25 @@ def clearPosition():
 
 def strategy():
     data = globalVar['kline']
-    trendOver(data)
-    shock(data)
-    trend(data)
+    if globalVar['position']:
+        if globalVar['mode'] == 'shockUp' and shock(data) == 'UP':
+            clearPosition()
+        elif globalVar['mode'] == 'shockDown' and shock(data) == 'LB':
+            clearPosition()
+        elif globalVar['mode'] == 'trendUp' and trendOver(data):
+            clearPosition()
+        elif globalVar['mode'] == 'trendDown' and trendOver(data):
+            clearPosition()
+    else:
+        if globalVar['mode'] == 'trendOver' and shock(data) == 'UP':
+            globalVar['mode'] = 'shockDown'
+            doLong()
+        elif globalVar['mode'] == 'trendOver' and shock(data) == 'LB':
+            globalVar['mode'] = 'shockUp'
+            doShort()
+        elif trend(data) == 'up':
+            globalVar['mode'] = 'trendUp'
+            doLong()
+        elif trend(data) == 'down':
+            globalVar['mode'] = 'trendDown'
+            doShort()
