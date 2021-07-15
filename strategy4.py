@@ -54,12 +54,14 @@ def trend(data):
     currentPrice = float(data[-1][4])
     if (currentPrice > UP or currentPrice < LB) and preBW < BW < 0.035:
         if currentPrice > UP and abs(currentPrice - UP) / UP > 0.006:
-            msg = '趋势开多 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
-            notify(msg)
+            if not globalVar['position']:
+                msg = '趋势开多 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
+                notify(msg)
             return 'up'
         if currentPrice < LB and abs(currentPrice - LB) / LB > 0.006:
-            msg = '趋势开空 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
-            notify(msg)
+            if not globalVar['position']:
+                msg = '趋势开空 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
+                notify(msg)
             return 'down'
     return ''
 
@@ -83,12 +85,12 @@ def shock(data):
     currentPrice = float(data[-1][4])
     if LB < currentPrice < UP and (UP - LB) / MB > 0.02:
         if currentPrice < MB and currentPrice < LB * (1 + 0.002):
-            if globalVar['mode'] == 'shockUp':
+            if not globalVar['position']:
                 msg = '震荡开单做多 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
                 notify(msg)
             return 'LB'
         if currentPrice > MB and currentPrice > UP * (1 - 0.002):
-            if globalVar['mode'] == 'shockDown':
+            if not globalVar['position']:
                 msg = '震荡开单做空 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
                 notify(msg)
             return 'UP'
