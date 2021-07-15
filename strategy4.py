@@ -67,14 +67,13 @@ def trend(data):
 
 
 def trendOver(data):
-    MA30 = getMA(data, 30)
-    # 上一根K线的收盘价
-    currentPrice = float(data[-2][4])
-    if (globalVar['mode'] == 'trendDown' and currentPrice > MA30 and (
-            currentPrice - MA30) / MA30 > 0.003) or (globalVar['mode'] == 'trendUp' and currentPrice < MA30 and (
-            MA30 - currentPrice) / MA30 > 0.003):
+    MA20 = getMA(data, 20)
+    currentPrice = float(data[-1][4])
+    if (globalVar['mode'] == 'trendDown' and currentPrice > MA20 and (
+            currentPrice - MA20) / MA20 > 0.004) or (globalVar['mode'] == 'trendUp' and currentPrice < MA20 and (
+            MA20 - currentPrice) / MA20 > 0.004):
         globalVar['mode'] = 'trendOver'
-        msg = '趋势结束 当前价格: ' + str(currentPrice) + ' MA30: ' + str(MA30)
+        msg = '趋势结束 当前价格: ' + str(currentPrice) + ' MA20: ' + str(MA20)
         notify(msg)
         return True
     return False
