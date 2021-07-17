@@ -47,7 +47,7 @@ class WebSocketListener(object):
                          '模式: ' + '止盈止损'])
                     self.user.last_time = time.time()
                     self.user.position = False
-                    self.user.notifier.sendMessageToWeiXin(msg)
+                    self.user.notifier.notify(msg)
 
                 thread.start_new_thread(run, ())
 

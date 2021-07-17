@@ -25,7 +25,7 @@ def long(user, symbol, quantity, take_profit_scope, stop_scope):
     except Exception as e:
         print(e)
     msg = '做多 ' + symbol + ' 量：' + quantity + ' 均价：' + price + ' 时间：' + getHumanReadTime()
-    user.notifier.sendMessageToWeiXin(msg)
+    user.notifier.notify(msg)
 
 
 def short(user, symbol, quantity, take_profit_scope, stop_scope):
@@ -52,7 +52,7 @@ def short(user, symbol, quantity, take_profit_scope, stop_scope):
     except Exception as e:
         print(e)
     msg = '做空 ' + symbol + ' 量：' + quantity + ' 均价：' + price + ' 时间：' + getHumanReadTime()
-    user.notifier.sendMessageToWeiXin(msg)
+    user.notifier.notify(msg)
 
 
 def batchDoLong(users, symbol, quantity, take_profit_scope, stop_scope):
