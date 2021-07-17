@@ -7,7 +7,7 @@ from util import getTime
 
 class BinanceApi(object):
 
-    def __init__(self, secret_key, api_key):
+    def __init__(self, api_key, secret_key):
         self.secret_key = secret_key
         self.host = "fapi.binance.com"
         self.headers = {

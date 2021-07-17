@@ -20,7 +20,7 @@ def main():
         listener = WebSocketListener(user, user.listenKey)
         listener.listenOnThread()
     # 获取历史k线数据
-    data = globalVar['defaultUser'].getKline(symbol, interval)
+    data = globalVar['defaultUser'].api.getKline(symbol, interval)
     globalVar['kline'] = data
     kline = symbol.lower() + '@kline_' + '15m'
     listener = WebSocketListener(globalVar['defaultUser'], kline, strategy)
