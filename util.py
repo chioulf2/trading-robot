@@ -1,9 +1,6 @@
-import hashlib
-import hmac
-import requests
 import talib
 import numpy as np
-from config import *
+import time
 
 
 def getTime():
@@ -69,15 +66,3 @@ def pianli(data):
     elif ratio > 0.05 and currentPrice < MA30:
         return 'up'
     return ''
-
-
-def getKline(symbol, interval):
-    method = '/fapi/v1/klines'
-    # timestamp = str(getTime())
-    msg = '&'.join(
-        ['symbol=' + symbol, 'interval=' + interval, 'limit=200'])
-    signature = hmac.new(bytes(secret_key, 'utf-8'), msg=bytes(msg, 'utf-8'), digestmod=hashlib.sha256).hexdigest()
-    response = requests.get('https://' + host + method + '?' + msg + '&signature=' + signature,
-                            headers=headers)
-    content = json.loads(response.content)
-    return content
