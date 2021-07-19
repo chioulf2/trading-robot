@@ -1,3 +1,5 @@
 config.json
 notify.py
 dbConnect.py
+.idea/
+__pycache__/
