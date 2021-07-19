@@ -62,6 +62,10 @@ class WebSocketListener(object):
         elif message['e'] == "ORDER_TRADE_UPDATE":
             self.handleClosePosition(message)
         elif message['e'] == "kline":
+            # 大于23小时重连（每24小时服务器会断开连接）
+            if (time.time() - globalVar['listenTime']) / 3600 > 23:
+                ws.close()
+                return
             newItem = [message['k']['t'], message['k']['o'], message['k']['h'], message['k']['l'],
                        message['k']['c'],
                        message['k']['v'], message['k']['T'], message['k']['q'], message['k']['n'],
@@ -92,6 +96,7 @@ class WebSocketListener(object):
     def listenStreams(self):
         if self.streamName:
             streamNames = '/'.join([self.streamName])
+            globalVar['listenTime'] = time.time()
         else:
             streamNames = '/'.join([self.user.api.getListenKey()])
         websocket.enableTrace(True)
