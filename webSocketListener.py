@@ -57,6 +57,7 @@ class WebSocketListener(object):
         if message['e'] == "listenKeyExpired":
             print('listenKey过期 ', getHumanReadTime())
             ws.close()
+            self.listenStreams()
         elif message['e'] == 'ACCOUNT_UPDATE':
             self.user.balance = float(message['a']['B'][0]['wb'])
         elif message['e'] == "ORDER_TRADE_UPDATE":
@@ -65,6 +66,7 @@ class WebSocketListener(object):
             # 大于23小时重连（每24小时服务器会断开连接）
             if (time.time() - globalVar['listenTime']) / 3600 > 23:
                 ws.close()
+                self.listenStreams()
                 return
             newItem = [message['k']['t'], message['k']['o'], message['k']['h'], message['k']['l'],
                        message['k']['c'],
@@ -86,7 +88,6 @@ class WebSocketListener(object):
     def on_close(self, ws):
         print("### 关闭WebSocket ###")
         print(ws)
-        self.listenStreams()
 
     def on_open(self, ws):
         print("### 开启WebSocket ###")
