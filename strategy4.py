@@ -104,32 +104,26 @@ class Strategy(object):
     def strategy(self):
         data = globalVar['kline']
         if globalVar['mode'] in ['shockUp', 'shockDown', 'trendOver'] and self.shock(data) == 'UP':
-            print('震荡到上轨：平多，做空')
             globalVar['mode'] = 'shockDown'
             self.clearPosition('long')
             self.doShort()
         elif globalVar['mode'] in ['shockUp', 'shockDown', 'trendOver'] and self.shock(data) == 'LB':
-            print('震荡到下轨：平空，做多')
             globalVar['mode'] = 'shockUp'
             self.clearPosition('short')
             self.doLong()
         elif globalVar['mode'] == 'trendUp' and self.trendOver(data):
-            print('上行趋势跌破：平多')
             globalVar['mode'] = 'trendOver'
             self.clearPosition('long')
             self.doLong()
         elif globalVar['mode'] == 'trendDown' and self.trendOver(data):
-            print('下行趋势涨破：平空')
             globalVar['mode'] = 'trendOver'
             self.clearPosition('short')
             self.doShort()
         elif self.trend(data) == 'up':
-            print('上行趋势：平空，做多')
             globalVar['mode'] = 'trendUp'
             self.clearPosition('short')
             self.doLong()
         elif self.trend(data) == 'down':
-            print('下行趋势：平多，做空')
             globalVar['mode'] = 'trendDown'
             self.clearPosition('long')
             self.doShort()

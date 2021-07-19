@@ -32,6 +32,7 @@ class WebSocketListener(object):
                         self.user.orderMap.pop(message['o']['i'])
                     except Exception as e:
                         print(e)
+                        self.user.notifier.notify(str(e))
                     try:
                         if message['o']['ot'] == "STOP_MARKET":
                             self.user.loss_count += 1
