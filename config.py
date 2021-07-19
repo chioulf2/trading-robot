@@ -20,4 +20,4 @@ leverage = '1'  # 合约倍数
 init_time = time.time()  # 开机时间
 interval = '15m'  # 15分钟k线
 # 盈利次数，亏损次数，当前时间，当前资产，止盈止损订单对
-globalVar = {'mode': 'trendOver', 'kline': [], 'userConfig': userConfig, 'defaultUser': defaultUser}
+globalVar = {'mode': 'trendOver', 'kline': [], 'userConfig': userConfig, 'userMap': {},'defaultUser': defaultUser}
