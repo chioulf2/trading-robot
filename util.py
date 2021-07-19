@@ -1,4 +1,4 @@
-import talib
+# import talib
 import numpy as np
 import time
 
@@ -40,21 +40,21 @@ def getBoll(data, j=0, N=20, K=2):
     return [MB, UP, LB, PB, BW]
 
 
-def macdjincha(data):
-    close = [float(x[4]) for x in data]
-    df = {}
-    # 调用talib计算指数移动平均线的值
-    # df['EMA12'] = talib.EMA(np.array(close), timeperiod=12)
-    # df['EMA26'] = talib.EMA(np.array(close), timeperiod=26)
-    # 调用talib计算MACD指标
-    df['DIF'], df['DEM'], df['D-M'] = talib.MACD(np.array(close), fastperiod=12, slowperiod=26,
-                                                 signalperiod=9)
-    # 金叉或者死叉
-    if df['DIF'][-1] - df['DEM'][-1] > 0.1 and df['DIF'][-2] - df['DEM'][-2] < -0.1:
-        return 'up'
-    elif df['DIF'][-1] - df['DEM'][-1] < -0.1 and df['DIF'][
-        -2] - df['DEM'][-2] > 0.1:
-        return 'down'
+# def macdjincha(data):
+#     close = [float(x[4]) for x in data]
+#     df = {}
+#     # 调用talib计算指数移动平均线的值
+#     # df['EMA12'] = talib.EMA(np.array(close), timeperiod=12)
+#     # df['EMA26'] = talib.EMA(np.array(close), timeperiod=26)
+#     # 调用talib计算MACD指标
+#     df['DIF'], df['DEM'], df['D-M'] = talib.MACD(np.array(close), fastperiod=12, slowperiod=26,
+#                                                  signalperiod=9)
+#     # 金叉或者死叉
+#     if df['DIF'][-1] - df['DEM'][-1] > 0.1 and df['DIF'][-2] - df['DEM'][-2] < -0.1:
+#         return 'up'
+#     elif df['DIF'][-1] - df['DEM'][-1] < -0.1 and df['DIF'][
+#         -2] - df['DEM'][-2] > 0.1:
+#         return 'down'
 
 
 def pianli(data):

@@ -13,6 +13,10 @@ class BinanceApi(object):
         self.headers = {
             "X-MBX-APIKEY": api_key
         }
+        self.proxies = {
+          "http": "http://127.0.0.1:1087",
+          "https": "http://127.0.0.1:1087",
+        }
 
     def getSignature(self, msg):
         return hmac.new(bytes(self.secret_key, 'utf-8'), msg=bytes(msg, 'utf-8'), digestmod=hashlib.sha256).hexdigest()
@@ -20,17 +24,17 @@ class BinanceApi(object):
     def getRequest(self, method, msg, signature):
         return requests.get(
             'https://' + self.host + method + '?' + msg + '&signature=' + signature,
-            headers=self.headers)
+            headers=self.headers, proxies=self.proxies)
 
     def postRequest(self, method, msg, signature):
         return requests.post(
             'https://' + self.host + method + '?' + msg + '&signature=' + signature,
-            headers=self.headers)
+            headers=self.headers, proxies=self.proxies)
 
     def deleteRequest(self, method, msg, signature):
         return requests.delete(
             'https://' + self.host + method + '?' + msg + '&signature=' + signature,
-            headers=self.headers)
+            headers=self.headers, proxies=self.proxies)
 
     def getBalance(self):
         method = '/fapi/v2/balance'
