@@ -12,9 +12,9 @@ except ImportError:
 
 class WebSocketListener(object):
 
-    def __init__(self, user, streamNameArr, strategy=None):
+    def __init__(self, user=None, streamName=None, strategy=None):
         self.user = user
-        self.streamNameArr = streamNameArr
+        self.streamName = streamName
         self.strategy = strategy
 
     def handleClosePosition(self, message):
@@ -57,7 +57,6 @@ class WebSocketListener(object):
         if message['e'] == "listenKeyExpired":
             print('listenKey过期 ', getHumanReadTime())
             ws.close()
-            self.listenStreams()
         elif message['e'] == 'ACCOUNT_UPDATE':
             self.user.balance = float(message['a']['B'][0]['wb'])
         elif message['e'] == "ORDER_TRADE_UPDATE":
@@ -91,7 +90,10 @@ class WebSocketListener(object):
         pass
 
     def listenStreams(self):
-        streamNames = '/'.join(self.streamNameArr)
+        if self.streamName:
+            streamNames = '/'.join([self.streamName])
+        else:
+            streamNames = '/'.join([self.user.api.getListenKey()])
         websocket.enableTrace(True)
         ws = websocket.WebSocketApp("wss://fstream.binance.com/stream?streams=" + streamNames,
                                     on_message=self.on_message,

@@ -14,20 +14,16 @@ except ImportError:
 def main():
     strategy = Strategy()
     # 接下来的k线数据在webSocket中更新
-    # listenKeys = []
     for u in globalVar['userConfig']:
         user = User(*u[:3])
         strategy.add(user)
-        # globalVar['userMap'][user.secret_key] = user
-        # listenKeys.append(user.listenKey)
-        listener = WebSocketListener(user, [user.listenKey])
+        listener = WebSocketListener(user, None)
         listener.listenOnThread()
     # 获取历史k线数据
     data = globalVar['defaultUser'].api.getKline(symbol, interval)
     globalVar['kline'] = data
     kline = symbol.lower() + '@kline_' + '15m'
-    # listenKeys.append(kline)
-    listener = WebSocketListener(globalVar['defaultUser'], [kline], strategy)
+    listener = WebSocketListener(None, kline, strategy)
     listener.listen()
 
 

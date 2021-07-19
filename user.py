@@ -11,7 +11,6 @@ class User(object):
         self.notifyUid = notifyUid
         self.notifier = NotifyService(notifyUid)
         self.api = BinanceApi(api_key, secret_key)
-        self.listenKey = self.api.getListenKey()
         self.init_balance = self.api.getBalance()   # 初始资产
         self.last_balance = self.init_balance  # 上次平仓时的资产
         self.balance = self.init_balance  # 当前资产

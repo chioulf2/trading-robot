@@ -24,17 +24,17 @@ class BinanceApi(object):
     def getRequest(self, method, msg, signature):
         return requests.get(
             'https://' + self.host + method + '?' + msg + '&signature=' + signature,
-            headers=self.headers, proxies=self.proxies)
+            headers=self.headers)
 
     def postRequest(self, method, msg, signature):
         return requests.post(
             'https://' + self.host + method + '?' + msg + '&signature=' + signature,
-            headers=self.headers, proxies=self.proxies)
+            headers=self.headers)
 
     def deleteRequest(self, method, msg, signature):
         return requests.delete(
             'https://' + self.host + method + '?' + msg + '&signature=' + signature,
-            headers=self.headers, proxies=self.proxies)
+            headers=self.headers)
 
     def getBalance(self):
         method = '/fapi/v2/balance'
