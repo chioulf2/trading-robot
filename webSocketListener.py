@@ -88,13 +88,14 @@ class WebSocketListener(object):
     def on_close(self, ws):
         print("### 关闭WebSocket ###")
         print(ws)
+        self.listenStreams()
 
     def on_open(self, ws):
         print("### 开启WebSocket ###")
         print(ws)
-        pass
 
     def listenStreams(self):
+        print('before 监听WebSocket')
         if self.streamName:
             streamNames = '/'.join([self.streamName])
             globalVar['listenTime'] = time.time()
@@ -106,7 +107,7 @@ class WebSocketListener(object):
                                     on_error=self.on_error,
                                     on_open=self.on_open,
                                     on_close=self.on_close)
-        print('重启WebSocket')
+        print('after 监听WebSocket')
         ws.run_forever(sslopt={"check_hostname": False})
 
     def listenOnThread(self):
