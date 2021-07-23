@@ -52,7 +52,10 @@ class Strategy(object):
                 MA20 - currentPrice) / MA20 > 0.004):
             globalVar['mode'] = 'trendOver'
             for user in self.users:
-                msg = '趋势结束 当前价格: ' + str(currentPrice) + ' MA20: ' + str(MA20)
+                if currentPrice > MA20:
+                    msg = '下跌趋势结束 当前价格: ' + str(currentPrice) + ' MA20: ' + str(MA20)
+                else:
+                    msg = '上涨趋势结束 当前价格: ' + str(currentPrice) + ' MA20: ' + str(MA20)
                 user.notifier.notify(msg)
             return True
         return False
@@ -60,22 +63,23 @@ class Strategy(object):
     def shock(self, data):
         [MB, UP, LB, PB, BW] = getBoll(data)
         currentPrice = float(data[-1][4])
-        if LB < currentPrice < UP and (UP - LB) / MB > 0.02:
+        canOpen = (UP - LB) / MB > 0.02
+        if LB < currentPrice < UP:
             if currentPrice < MB and currentPrice < LB * (1 + 0.002):
                 for user in self.users:
                     if not user.position:
                         msg = '震荡开单做多 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(
                             LB)
                         user.notifier.notify(msg)
-                return 'LB'
+                return ['LB', canOpen]
             if currentPrice > MB and currentPrice > UP * (1 - 0.002):
                 for user in self.users:
                     if not user.position:
                         msg = '震荡开单做空 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(
                             LB)
                         user.notifier.notify(msg)
-                return 'UP'
-        return ''
+                return ['UP', canOpen]
+        return ['', False]
 
     def clearPosition(self, type):
         for user in self.users:
@@ -86,6 +90,7 @@ class Strategy(object):
                 user.last_time = time.time()
                 user.balance = user.getBalance()
                 profit = user.balance - user.last_balance
+                user.last_balance = user.balance
                 if profit < 0:
                     user.loss_count += 1
                 else:
@@ -103,14 +108,20 @@ class Strategy(object):
 
     def strategy(self):
         data = globalVar['kline']
-        if globalVar['mode'] in ['shockUp', 'shockDown', 'trendOver'] and self.shock(data) == 'UP':
-            globalVar['mode'] = 'shockDown'
-            self.clearPosition('long')
-            self.doShort()
-        elif globalVar['mode'] in ['shockUp', 'shockDown', 'trendOver'] and self.shock(data) == 'LB':
-            globalVar['mode'] = 'shockUp'
-            self.clearPosition('short')
-            self.doLong()
+        if globalVar['mode'] in ['shockUp', 'shockDown', 'trendOver']:
+            [direction, canOpen] = self.shock(data)
+            if direction == 'UP':
+                globalVar['mode'] = 'shockDown'
+                self.clearPosition('long')
+            if canOpen:
+                self.doShort()
+        elif globalVar['mode'] in ['shockUp', 'shockDown', 'trendOver']:
+            [direction, canOpen] = self.shock(data)
+            if direction == 'LB':
+                globalVar['mode'] = 'shockUp'
+                self.clearPosition('short')
+            if canOpen:
+                self.doLong()
         elif globalVar['mode'] == 'trendUp' and self.trendOver(data):
             globalVar['mode'] = 'trendOver'
             self.clearPosition('long')

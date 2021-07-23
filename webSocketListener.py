@@ -88,7 +88,6 @@ class WebSocketListener(object):
     def on_close(self, ws):
         print("### 关闭WebSocket ###")
         print(ws)
-        self.listenStreams()
 
     def on_open(self, ws):
         print("### 开启WebSocket ###")
