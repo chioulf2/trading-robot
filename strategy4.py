@@ -66,18 +66,20 @@ class Strategy(object):
         canOpen = (UP - LB) / MB > 0.02
         if LB < currentPrice < UP:
             if currentPrice < MB and currentPrice < LB * (1 + 0.002):
-                for user in self.users:
-                    if not user.position:
-                        msg = '震荡开单做多 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(
-                            LB)
-                        user.notifier.notify(msg)
+                if canOpen:
+                    for user in self.users:
+                        if not user.position:
+                            msg = '震荡开单做多 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(
+                                LB)
+                            user.notifier.notify(msg)
                 return ['LB', canOpen]
             if currentPrice > MB and currentPrice > UP * (1 - 0.002):
-                for user in self.users:
-                    if not user.position:
-                        msg = '震荡开单做空 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(
-                            LB)
-                        user.notifier.notify(msg)
+                if canOpen:
+                    for user in self.users:
+                        if not user.position:
+                            msg = '震荡开单做空 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(
+                                LB)
+                            user.notifier.notify(msg)
                 return ['UP', canOpen]
         return ['', False]
 
