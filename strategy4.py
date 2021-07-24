@@ -125,11 +125,9 @@ class Strategy(object):
         elif globalVar['mode'] == 'trendUp' and self.trendOver(data):
             globalVar['mode'] = 'trendOver'
             self.clearPosition('long')
-            self.doLong()
         elif globalVar['mode'] == 'trendDown' and self.trendOver(data):
             globalVar['mode'] = 'trendOver'
             self.clearPosition('short')
-            self.doShort()
         elif self.trend(data) == 'up':
             globalVar['mode'] = 'trendUp'
             self.clearPosition('short')
