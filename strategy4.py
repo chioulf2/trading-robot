@@ -115,15 +115,13 @@ class Strategy(object):
             if direction == 'UP':
                 globalVar['mode'] = 'shockDown'
                 self.clearPosition('long')
-            if canOpen:
-                self.doShort()
-        elif globalVar['mode'] in ['shockUp', 'shockDown', 'trendOver']:
-            [direction, canOpen] = self.shock(data)
-            if direction == 'LB':
+                if canOpen:
+                    self.doShort()
+            elif direction == 'LB':
                 globalVar['mode'] = 'shockUp'
                 self.clearPosition('short')
-            if canOpen:
-                self.doLong()
+                if canOpen:
+                    self.doLong()
         elif globalVar['mode'] == 'trendUp' and self.trendOver(data):
             globalVar['mode'] = 'trendOver'
             self.clearPosition('long')
