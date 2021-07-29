@@ -157,14 +157,13 @@ class BinanceApi(object):
         print(content)
 
     def deleteAllPosition(self, symbol):
-        price = self.getPrice(symbol)
         res = self.getUserData(symbol)
         longQuantity = res['long']
         shortQuantity = res['short']
         if longQuantity > 0:
-            self.order(symbol, 'SELL', 'LONG', 'MARKET', str(longQuantity), '', str(round(float(price) * 1.2, 2)))
+            self.order(symbol, 'SELL', 'LONG', 'MARKET', str(longQuantity), '')
         if shortQuantity > 0:
-            self.order(symbol, 'BUY', 'SHORT', 'MARKET', str(shortQuantity), '', str(round(float(price) * 0.8, 2)))
+            self.order(symbol, 'BUY', 'SHORT', 'MARKET', str(shortQuantity), '')
 
     def deleteOrder(self, symbol, orderId):
         method = '/fapi/v1/order'

@@ -13,7 +13,6 @@ except ImportError:
 
 def main():
     strategy = Strategy()
-    # 接下来的k线数据在webSocket中更新
     for u in globalVar['userConfig']:
         user = User(*u[:3])
         strategy.add(user)
@@ -22,6 +21,7 @@ def main():
     # 获取历史k线数据
     data = globalVar['defaultUser'].api.getKline(symbol, interval)
     globalVar['kline'] = data
+    # 接下来的k线数据在webSocket中更新
     kline = symbol.lower() + '@kline_' + '15m'
     listener = WebSocketListener(None, kline, strategy)
     listener.listen()

@@ -23,33 +23,34 @@ class WebSocketListener(object):
                 (message['o']['ot'] == "STOP_MARKET" or message['o']['ot'] == "TRAILING_STOP_MARKET" or
                  message['o'][
                      'ot'] == "LIMIT"):
-            try:
-                orderId = self.user.orderMap[message['o']['i']]
-                self.user.api.deleteOrder(symbol, orderId)
-                self.user.orderMap.pop(orderId)
-                self.user.orderMap.pop(message['o']['i'])
-            except Exception as e:
-                print(e)
-                self.user.notifier.notify(str(e))
-            try:
-                if message['o']['ot'] == "STOP_MARKET":
-                    self.user.loss_count += 1
-                elif message['o']['ot'] == "LIMIT" or message['o']['ot'] == "TRAILING_STOP_MARKET":
-                    self.user.profit_count += 1
-                msg = '\n'.join(
-                    ['盈利次数: ' + str(self.user.profit_count) + ' 次',
-                     '亏损次数: ' + str(self.user.loss_count) + ' 次',
-                     '总运行时长: ' + str(round((time.time() - init_time) / 3600, 2)) + ' 小时',
-                     '总盈亏: ' + str(self.user.balance - self.user.init_balance) + ' U',
-                     '本次开仓时长: ' + str(round((time.time() - self.user.last_time) / 3600, 2)) + ' 小时',
-                     '本单盈亏: ' + str(message['o']['rp']) + ' U',
-                     '平仓时间: ' + getHumanReadTime(),
-                     '模式: ' + '止盈止损'])
-                self.user.last_time = time.time()
-                self.user.position = None
-                self.user.notifier.notify(msg)
-            except Exception as e:
-                self.user.notifier.notify(str(e))
+            if message['o']['q'] == message['o']['z']:
+                try:
+                    orderId = self.user.orderMap[message['o']['i']]
+                    self.user.api.deleteOrder(symbol, orderId)
+                    self.user.orderMap.pop(orderId)
+                    self.user.orderMap.pop(message['o']['i'])
+                except Exception as e:
+                    print(e)
+                    self.user.notifier.notify(str(e))
+                try:
+                    if message['o']['ot'] == "STOP_MARKET":
+                        self.user.loss_count += 1
+                    elif message['o']['ot'] == "LIMIT" or message['o']['ot'] == "TRAILING_STOP_MARKET":
+                        self.user.profit_count += 1
+                    msg = '\n'.join(
+                        ['盈利次数: ' + str(self.user.profit_count) + ' 次',
+                         '亏损次数: ' + str(self.user.loss_count) + ' 次',
+                         '总运行时长: ' + str(round((time.time() - init_time) / 3600, 2)) + ' 小时',
+                         '总盈亏: ' + str(self.user.balance - self.user.init_balance) + ' U',
+                         '本次开仓时长: ' + str(round((time.time() - self.user.last_time) / 3600, 2)) + ' 小时',
+                         '本单盈亏: ' + str(message['o']['rp']) + ' U',
+                         '平仓时间: ' + getHumanReadTime(),
+                         '模式: ' + '止盈止损'])
+                    self.user.last_time = time.time()
+                    self.user.position = None
+                    self.user.notifier.notify(msg)
+                except Exception as e:
+                    self.user.notifier.notify(str(e))
 
     def on_message(self, ws, message):
         message = json.loads(message)
