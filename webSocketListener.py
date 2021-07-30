@@ -69,7 +69,7 @@ class WebSocketListener(object):
                 ws.close()
                 self.listenStreams()
                 return
-            if (time.time() - globalVar['klineTime']) / 60 < 3:
+            if (time.time() - globalVar['klineTime']) / 60 < 1.5:
                 return
             globalVar['klineTime'] = time.time()
             newItem = [message['k']['t'], message['k']['o'], message['k']['h'], message['k']['l'],
