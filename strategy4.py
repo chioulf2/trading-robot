@@ -110,7 +110,21 @@ class Strategy(object):
 
     def strategy(self):
         data = globalVar['kline']
-        if globalVar['mode'] in ['shockUp', 'shockDown', 'trendOver']:
+        if self.trend(data) == 'up':
+            globalVar['mode'] = 'trendUp'
+            self.clearPosition('short')
+            self.doLong()
+        elif self.trend(data) == 'down':
+            globalVar['mode'] = 'trendDown'
+            self.clearPosition('long')
+            self.doShort()
+        elif globalVar['mode'] == 'trendUp' and self.trendOver(data):
+            globalVar['mode'] = 'trendOver'
+            self.clearPosition('long')
+        elif globalVar['mode'] == 'trendDown' and self.trendOver(data):
+            globalVar['mode'] = 'trendOver'
+            self.clearPosition('short')
+        elif globalVar['mode'] in ['shockUp', 'shockDown', 'trendOver']:
             [direction, canOpen] = self.shock(data)
             if direction == 'UP':
                 globalVar['mode'] = 'shockDown'
@@ -122,17 +136,3 @@ class Strategy(object):
                 self.clearPosition('short')
                 if canOpen:
                     self.doLong()
-        elif globalVar['mode'] == 'trendUp' and self.trendOver(data):
-            globalVar['mode'] = 'trendOver'
-            self.clearPosition('long')
-        elif globalVar['mode'] == 'trendDown' and self.trendOver(data):
-            globalVar['mode'] = 'trendOver'
-            self.clearPosition('short')
-        elif self.trend(data) == 'up':
-            globalVar['mode'] = 'trendUp'
-            self.clearPosition('short')
-            self.doLong()
-        elif self.trend(data) == 'down':
-            globalVar['mode'] = 'trendDown'
-            self.clearPosition('long')
-            self.doShort()
