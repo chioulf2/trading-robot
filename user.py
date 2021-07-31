@@ -22,4 +22,4 @@ class User(object):
         self.leverage = '1'
 
     def getBalance(self):
-        self.api.getBalance()
+        return self.api.getBalance()
