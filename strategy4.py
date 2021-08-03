@@ -86,6 +86,8 @@ class Strategy(object):
     def clearPosition(self, type):
         for user in self.users:
             if user.position == type and round((time.time() - user.last_time) / 15 * 60, 2) > 1:
+                user.api.deleteAllOrder(symbol)
+                user.api.deleteAllPosition(symbol)
                 user.position = None
                 user.last_time = time.time()
                 user.balance = user.getBalance()
@@ -105,8 +107,6 @@ class Strategy(object):
                      '平仓时间: ' + getHumanReadTime(),
                      '模式: ' + '一键平仓'])
                 user.notifier.notify(msg)
-                user.api.deleteAllOrder(symbol)
-                user.api.deleteAllPosition(symbol)
 
     def strategy(self):
         data = globalVar['kline']

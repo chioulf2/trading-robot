@@ -46,8 +46,9 @@ class WebSocketListener(object):
                          '本单盈亏: ' + str(message['o']['rp']) + ' U',
                          '平仓时间: ' + getHumanReadTime(),
                          '模式: ' + '止盈止损'])
-                    self.user.last_time = time.time()
                     self.user.position = None
+                    self.user.last_time = time.time()
+                    self.user.last_balance = self.user.getBalance()
                     self.user.notifier.notify(msg)
                 except Exception as e:
                     self.user.notifier.notify(str(e))
