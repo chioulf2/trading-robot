@@ -20,10 +20,10 @@ class Strategy(object):
         self.users.append(user)
 
     def doLong(self):
-        batchDoLong(self.users, symbol, quantity, 0.02, 0.01)
+        batchDoLong(self.users, symbol, 0.02, 0.01)
 
     def doShort(self):
-        batchDoShort(self.users, symbol, quantity, 0.02, 0.01)
+        batchDoShort(self.users, symbol, 0.02, 0.01)
 
     def trend(self, data):
         [MB, UP, LB, PB, BW] = getBoll(data)

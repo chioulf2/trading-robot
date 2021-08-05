@@ -55,11 +55,11 @@ def short(user, symbol, quantity, take_profit_scope, stop_scope):
     user.notifier.notify(msg)
 
 
-def batchDoLong(users, symbol, quantity, take_profit_scope, stop_scope):
+def batchDoLong(users, symbol, take_profit_scope, stop_scope):
     for user in users:
-        long(user, symbol, quantity, take_profit_scope, stop_scope)
+        long(user, symbol, user.quantity, take_profit_scope, stop_scope)
 
 
-def batchDoShort(users, symbol, quantity, take_profit_scope, stop_scope):
+def batchDoShort(users, symbol, take_profit_scope, stop_scope):
     for user in users:
-        short(user, symbol, quantity, take_profit_scope, stop_scope)
+        short(user, symbol, user.quantity, take_profit_scope, stop_scope)
