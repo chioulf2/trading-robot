@@ -14,7 +14,7 @@ except ImportError:
 def main():
     strategy = Strategy()
     for u in globalVar['userConfig']:
-        user = User(*u[:4])
+        user = User(*u[:5])
         strategy.add(user)
         listener = WebSocketListener(user, None)
         listener.listenOnThread()
