@@ -66,3 +66,10 @@ def pianli(data):
     elif ratio > 0.05 and currentPrice < MA30:
         return 'up'
     return ''
+
+
+def addUser(strategy, u):
+    user = User(*u[:5])
+    strategy.add(user)
+    listener = WebSocketListener(user, None)
+    listener.listenOnThread()

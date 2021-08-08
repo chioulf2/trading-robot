@@ -1,7 +1,7 @@
 # 这个策略是根据15分钟价格偏离MA30的程度来做多做空
 
 import time
-from config import symbol, quantity, globalVar, init_time
+from config import globalVar
 from util import getBoll, getMA, getHumanReadTime
 from common import batchDoShort, batchDoLong
 
@@ -20,10 +20,10 @@ class Strategy(object):
         self.users.append(user)
 
     def doLong(self):
-        batchDoLong(self.users, symbol, 0.02, 0.01)
+        batchDoLong(self.users, globalVar['symbol'], 0.02, 0.01)
 
     def doShort(self):
-        batchDoShort(self.users, symbol, 0.02, 0.01)
+        batchDoShort(self.users, globalVar['symbol'], 0.02, 0.01)
 
     def trend(self, data):
         [MB, UP, LB, PB, BW] = getBoll(data)
@@ -86,8 +86,8 @@ class Strategy(object):
     def clearPosition(self, type):
         for user in self.users:
             if user.position == type and round((time.time() - user.last_time) / 15 * 60, 2) > 1:
-                user.api.deleteAllOrder(symbol)
-                user.api.deleteAllPosition(symbol)
+                user.api.deleteAllOrder(globalVar['symbol'])
+                user.api.deleteAllPosition(globalVar['symbol'])
                 user.position = None
                 user.last_time = time.time()
                 user.balance = user.getBalance()
@@ -100,7 +100,7 @@ class Strategy(object):
                 msg = '\n'.join(
                     ['盈利次数: ' + str(user.profit_count) + ' 次',
                      '亏损次数: ' + str(user.loss_count) + ' 次',
-                     '总运行时长: ' + str(round((time.time() - init_time) / 3600, 2)) + ' 小时',
+                     '总运行时长: ' + str(round((time.time() - globalVar['init_time']) / 3600, 2)) + ' 小时',
                      '总盈亏: ' + str(user.balance - user.init_balance) + ' U',
                      '本次开仓时长: ' + str(round((time.time() - user.last_time) / 3600, 2)) + ' 小时',
                      '本单盈亏: ' + str(profit) + ' U',

@@ -2,7 +2,7 @@ import websocket
 import time
 import json
 from util import getHumanReadTime
-from config import symbol, init_time, globalVar
+from config import globalVar
 
 try:
     import thread
@@ -26,7 +26,7 @@ class WebSocketListener(object):
             if message['o']['q'] == message['o']['z']:
                 try:
                     orderId = self.user.orderMap[message['o']['i']]
-                    self.user.api.deleteOrder(symbol, orderId)
+                    self.user.api.deleteOrder(globalVar['symbol'], orderId)
                     self.user.orderMap.pop(orderId)
                     self.user.orderMap.pop(message['o']['i'])
                 except Exception as e:
@@ -40,7 +40,7 @@ class WebSocketListener(object):
                     msg = '\n'.join(
                         ['盈利次数: ' + str(self.user.profit_count) + ' 次',
                          '亏损次数: ' + str(self.user.loss_count) + ' 次',
-                         '总运行时长: ' + str(round((time.time() - init_time) / 3600, 2)) + ' 小时',
+                         '总运行时长: ' + str(round((time.time() - globalVar['init_time']) / 3600, 2)) + ' 小时',
                          '总盈亏: ' + str(self.user.balance - self.user.init_balance) + ' U',
                          '本次开仓时长: ' + str(round((time.time() - self.user.last_time) / 3600, 2)) + ' 小时',
                          '本单盈亏: ' + str(message['o']['rp']) + ' U',
