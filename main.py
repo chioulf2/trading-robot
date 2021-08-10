@@ -15,8 +15,9 @@ except ImportError:
 
 def main():
     strategy = Strategy()
+    webSocketPool = []
     for u in globalVar['userConfig']:
-        addUser(strategy, u)
+        addUser(strategy, webSocketPool, u)
     # MessageQueue(strategy)
     # 获取历史k线数据
     data = globalVar['defaultUser'].api.getKline(globalVar['symbol'], globalVar['interval'])

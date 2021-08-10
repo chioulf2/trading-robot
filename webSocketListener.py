@@ -16,6 +16,7 @@ class WebSocketListener(object):
         self.user = user
         self.streamName = streamName
         self.strategy = strategy
+        self.ws = None
 
     def handleClosePosition(self, message):
         if message['o']['x'] == "TRADE" and (
@@ -106,13 +107,13 @@ class WebSocketListener(object):
         else:
             streamNames = '/'.join([self.user.api.getListenKey()])
         websocket.enableTrace(True)
-        ws = websocket.WebSocketApp("wss://fstream.binance.com/stream?streams=" + streamNames,
-                                    on_message=self.on_message,
-                                    on_error=self.on_error,
-                                    on_open=self.on_open,
-                                    on_close=self.on_close)
+        self.ws = websocket.WebSocketApp("wss://fstream.binance.com/stream?streams=" + streamNames,
+                                         on_message=self.on_message,
+                                         on_error=self.on_error,
+                                         on_open=self.on_open,
+                                         on_close=self.on_close)
         print('after 监听WebSocket')
-        ws.run_forever(sslopt={"check_hostname": False})
+        self.ws.run_forever(sslopt={"check_hostname": False})
 
     def listenOnThread(self):
         def run():
@@ -122,3 +123,6 @@ class WebSocketListener(object):
 
     def listen(self):
         self.listenStreams()
+
+    def close(self):
+        self.ws.close()

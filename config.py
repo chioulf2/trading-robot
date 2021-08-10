@@ -12,12 +12,12 @@ def config():
     headers = c['headers']
     api_key = headers['X-MBX-APIKEY']
     notifyUid = c['notifyUid']
-    defaultUser = User(api_key, secret_key, notifyUid)
+    defaultUser = User(api_key, secret_key, notifyUid, '')
 
     dbConn = getDBConn()
-    global_cursor = dbConn.cursor()
-    global_cursor.execute("select * from `user`")
-    userConfig = global_cursor.fetchall()
+    cursor = dbConn.cursor()
+    cursor.execute("select * from `user`")
+    userConfig = cursor.fetchall()
     dbConn.commit()
     print(userConfig)
 

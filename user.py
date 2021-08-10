@@ -5,14 +5,14 @@ from notify import NotifyService
 
 class User(object):
 
-    def __init__(self, api_key, secret_key, notifyUid, quantity='0.05', level='1'):
+    def __init__(self, api_key, secret_key, wxPushUid, TgPushUid, quantity='0.05', level='1'):
         self.api_key = api_key
         self.secret_key = secret_key
-        self.notifyUid = notifyUid
+        self.wxPushUid = wxPushUid
         if quantity == '' or quantity is None:
             quantity = '0.05'
         self.quantity = quantity
-        self.notifier = NotifyService(notifyUid)
+        self.notifier = NotifyService(wxPushUid, TgPushUid)
         self.api = BinanceApi(api_key, secret_key)
         self.init_balance = self.api.getBalance()  # 初始资产
         self.last_balance = self.init_balance  # 上次平仓时的资产

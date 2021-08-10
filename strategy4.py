@@ -19,6 +19,12 @@ class Strategy(object):
     def add(self, user):
         self.users.append(user)
 
+    def remove(self, api_key):
+        for i in range(len(self.users)):
+            if self.users[i].api_key == api_key:
+                del self.users[i]
+                break
+
     def doLong(self):
         batchDoLong(self.users, globalVar['symbol'], 0.02, 0.01)
 
