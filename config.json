@@ -1,0 +1,8 @@
+{
+  "host": "fapi.binance.com",
+  "secret_key": "I7LoQrd8t7vOOJIua2Cubxlu6RzC3B9qaZkNw2rNXwbkmlFjNd91JWSvz3tWZW6v",
+  "headers": {
+    "X-MBX-APIKEY": "j82BdudGS1vRDcCkVrEhpyqCXm7nFilP3nvPZ2y4hy8yRO3jJr3bBYJJV6RZAJAd"
+  },
+  "notifyUid": "UID_Hoe5dkX9dnPXf9QyYj51cTGu3suh"
+}
