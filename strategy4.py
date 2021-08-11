@@ -25,17 +25,17 @@ class Strategy(object):
                 del self.users[i]
                 break
 
-    def doLong(self):
-        batchDoLong(self.users, globalVar['symbol'], 0.02, 0.01)
+    def doLong(self, take_profit_scope, stop_scope):
+        batchDoLong(self.users, globalVar['symbol'], take_profit_scope, stop_scope)
 
-    def doShort(self):
-        batchDoShort(self.users, globalVar['symbol'], 0.02, 0.01)
+    def doShort(self, take_profit_scope, stop_scope):
+        batchDoShort(self.users, globalVar['symbol'], take_profit_scope, stop_scope)
 
     def trend(self, data):
         [MB, UP, LB, PB, BW] = getBoll(data)
         [preMB, preUP, preLB, prePB, preBW] = getBoll(data, -1)
         currentPrice = float(data[-1][4])
-        if (currentPrice > UP or currentPrice < LB) and preBW < BW < 0.035:
+        if (currentPrice > UP or currentPrice < LB) and preBW < BW and 0.024 < BW < 0.035:
             if currentPrice > UP and abs(currentPrice - UP) / UP > 0.006:
                 for user in self.users:
                     if not user.position:
@@ -119,11 +119,11 @@ class Strategy(object):
         if self.trend(data) == 'up':
             globalVar['mode'] = 'trendUp'
             self.clearPosition('short')
-            self.doLong()
+            self.doLong(0.02, 0.01)
         elif self.trend(data) == 'down':
             globalVar['mode'] = 'trendDown'
             self.clearPosition('long')
-            self.doShort()
+            self.doShort(0.02, 0.01)
         elif globalVar['mode'] == 'trendUp' and self.trendOver(data):
             globalVar['mode'] = 'trendOver'
             self.clearPosition('long')
@@ -136,9 +136,9 @@ class Strategy(object):
                 globalVar['mode'] = 'shockDown'
                 self.clearPosition('long')
                 if canOpen:
-                    self.doShort()
+                    self.doShort(0.01, 0.01)
             elif direction == 'LB':
                 globalVar['mode'] = 'shockUp'
                 self.clearPosition('short')
                 if canOpen:
-                    self.doLong()
+                    self.doLong(0.01, 0.01)
