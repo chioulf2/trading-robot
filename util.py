@@ -21,7 +21,7 @@ def getMA(data, N, j=0):
     return sum(float(d[4]) for d in data[-1 - N + j: -1 + j]) / float(N)
 
 
-def getBoll(data, j=0, N=20, K=2):
+def getBoll(data, j=0, P=2, N=20):
     '''
     一般情况下，设定N=20和K=2，这两个数值也是在布林带当中使用最多的。
     在日线图里，N=20其实就是“月均线”（MA20）。
@@ -32,7 +32,7 @@ def getBoll(data, j=0, N=20, K=2):
     :return: [中轨值, 上轨值, 下轨值, %b指标, 宽带指标]
     '''
     MB = getMA(data, N)
-    delta = K * np.std([float(d[4]) for d in data[-1 - N + j: -1 + j]])
+    delta = P * np.std([float(d[4]) for d in data[-1 - N + j: -1 + j]])
     UP = MB + delta
     LB = MB - delta
     PB = (float(data[-1 + j][4]) - LB) / (UP - LB)

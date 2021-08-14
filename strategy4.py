@@ -60,8 +60,8 @@ class Strategy(object):
         return False
 
     def trend(self, data):
-        [MB, UP, LB, PB, BW] = getBoll(data)
-        [preMB, preUP, preLB, prePB, preBW] = getBoll(data, -1)
+        [MB, UP, LB, PB, BW] = getBoll(data, 0, globalVar['P'])
+        [preMB, preUP, preLB, prePB, preBW] = getBoll(data, -1, globalVar['P'])
         currentPrice = float(data[-1][4])
         if (currentPrice > UP or currentPrice < LB) and preBW < BW < 0.035:
             if currentPrice > UP and abs(currentPrice - UP) / UP > 0.006:
@@ -95,7 +95,7 @@ class Strategy(object):
         return False
 
     def shock(self, data):
-        [MB, UP, LB, PB, BW] = getBoll(data)
+        [MB, UP, LB, PB, BW] = getBoll(data, 0, globalVar['P'])
         currentPrice = float(data[-1][4])
         canOpen = (UP - LB) / MB > 0.02
         if LB < currentPrice < UP:
@@ -146,12 +146,21 @@ class Strategy(object):
         data = globalVar['kline']
         if not globalVar['isNeedleMarket']:
             if not self.isNeedleMarketStart(data):
+                # 继续非针市
                 self.DFA(data)
             else:
+                # 开始针市
                 globalVar['isNeedleMarket'] = True
+                globalVar['P'] = 3
+                self.DFA(data)
         else:
             if self.isNeedleMarketEnd(data):
+                # 结束针市
                 globalVar['isNeedleMarket'] = False
+                globalVar['P'] = 2
+                self.DFA(data)
+            else:
+                # 继续针市
                 self.DFA(data)
 
     def DFA(self, data):

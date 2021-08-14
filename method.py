@@ -18,4 +18,3 @@ def removeUser(strategy, webSocketPool, api_key):
         if webSocketPool[i].api_key == api_key:
             del webSocketPool[i]
             break
-
