@@ -2,7 +2,7 @@
 
 import time
 from config import globalVar
-from util import getBoll, getMA, getHumanReadTime
+from util import getBoll, getMA, getHumanReadTime, isNeedle, isBigNeedle
 from common import batchDoShort, batchDoLong
 
 try:
@@ -31,11 +31,39 @@ class Strategy(object):
     def doShort(self, take_profit_scope, stop_scope):
         batchDoShort(self.users, globalVar['symbol'], take_profit_scope, stop_scope)
 
+    def isNeedleMarketStart(self, data):
+        # 检测一天内的插针的情况 96 = 24*4
+        bigNeedleCount = 0
+        needleCount = 0
+        for i in range(-1, -96):
+            if isBigNeedle(data[i]):
+                bigNeedleCount += 1
+                needleCount += 1
+            elif isNeedle(data[i]):
+                needleCount += 1
+        if bigNeedleCount >= 2 or needleCount >= 6:
+            return True
+        return False
+
+    def isNeedleMarketEnd(self, data):
+        # 检测一天内的插针的情况 96 = 24*4
+        bigNeedleCount = 0
+        needleCount = 0
+        for i in range(-1, -96):
+            if isBigNeedle(data[i]):
+                bigNeedleCount += 1
+                needleCount += 1
+            elif isNeedle(data[i]):
+                needleCount += 1
+        if bigNeedleCount == 0 or needleCount <= 1:
+            return True
+        return False
+
     def trend(self, data):
         [MB, UP, LB, PB, BW] = getBoll(data)
         [preMB, preUP, preLB, prePB, preBW] = getBoll(data, -1)
         currentPrice = float(data[-1][4])
-        if (currentPrice > UP or currentPrice < LB) and preBW < BW and 0.024 < BW < 0.035:
+        if (currentPrice > UP or currentPrice < LB) and preBW < BW < 0.035:
             if currentPrice > UP and abs(currentPrice - UP) / UP > 0.006:
                 for user in self.users:
                     if not user.position:
@@ -116,6 +144,17 @@ class Strategy(object):
 
     def strategy(self):
         data = globalVar['kline']
+        if not globalVar['isNeedleMarket']:
+            if not self.isNeedleMarketStart(data):
+                self.DFA(data)
+            else:
+                globalVar['isNeedleMarket'] = True
+        else:
+            if self.isNeedleMarketEnd(data):
+                globalVar['isNeedleMarket'] = False
+                self.DFA(data)
+
+    def DFA(self, data):
         if self.trend(data) == 'up':
             globalVar['mode'] = 'trendUp'
             self.clearPosition('short')

@@ -68,8 +68,25 @@ def pianli(data):
     return ''
 
 
-def addUser(strategy, u):
-    user = User(*u[:5])
-    strategy.add(user)
-    listener = WebSocketListener(user, None)
-    listener.listenOnThread()
+def isNeedle(dataItem):
+    start = dataItem[1]
+    highest = dataItem[2]
+    lowest = dataItem[3]
+    end = dataItem[4]
+    max = max(start, end)
+    min = min(start, end)
+    if (highest - max) / max > 0.008 or (min - lowest) / min > 0.008:
+        return True
+    return False
+
+
+def isBigNeedle(dataItem):
+    start = dataItem[1]
+    highest = dataItem[2]
+    lowest = dataItem[3]
+    end = dataItem[4]
+    max = max(start, end)
+    min = min(start, end)
+    if (highest - max) / max > 0.012 or (min - lowest) / min > 0.012:
+        return True
+    return False

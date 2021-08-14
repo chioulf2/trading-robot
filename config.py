@@ -37,6 +37,7 @@ def config():
         'userConfig': userConfig,  # 用户配置: api-key, secret-key, notify-uid, 开仓数, 合约倍数
         'defaultUser': defaultUser,  # 默认用户，用于监听k线数据
         'dbConn': dbConn,
+        'isNeedleMarket': False
     }
 
 
