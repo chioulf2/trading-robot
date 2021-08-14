@@ -3,7 +3,7 @@ from webSocketListener import WebSocketListener
 
 
 def addUser(strategy, webSocketPool, u):
-    if u[7] == 'true':
+    if u[8] == 'true':
         return
     user = User(*u[:6])
     strategy.add(user)
