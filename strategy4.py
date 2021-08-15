@@ -169,6 +169,9 @@ class Strategy4(object):
                 user.notifier.notify(msg)
 
     def strategy(self):
+        if (time.time() - self.klineTime) / 60 < 1:
+            return
+        self.klineTime = time.time()
         data = self.kline15m
         if not globalVar['isNeedleMarket']:
             if not isNeedleMarketStart(data):

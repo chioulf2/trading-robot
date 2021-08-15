@@ -1,11 +1,10 @@
 """
 30分钟布林线量化交易模板
 1. 做多：
-    前两次收盘价格 > MA20，当前MA20 > 前一次MA20
+    前两次收盘价格 > MA20，当前MA20 > 前一次MA20，(1小时中轨向下 and 价格 <= MA20) or (1小时中轨向上 and 时间在当前k线结束的时候)
 2. 做空：
-    前两次收盘价格 < MA20，当前MA20 < 前一次MA20
+    前两次收盘价格 < MA20，当前MA20 < 前一次MA20，(1小时中轨向上 and 价格 >= MA20) or (1小时中轨向下 and 时间在当前k线结束的时候)
 平多时，开空；平空时，开多。
-开仓时间在当前k线结束的时候
 """
 
 import time
@@ -18,24 +17,6 @@ try:
     import thread
 except ImportError:
     import _thread as thread
-
-
-def canDoLong(data):
-    MA20 = getMA(data, 20)
-    preMA20 = getMA(data, 20, -1)
-    pre2MA20 = getMA(data, 20, -2)
-    if data[-3][4] > pre2MA20 and data[-2][4] > preMA20 and MA20 > preMA20:
-        return True
-    return False
-
-
-def canDoShort(data):
-    MA20 = getMA(data, 20)
-    preMA20 = getMA(data, 20, -1)
-    pre2MA20 = getMA(data, 20, -2)
-    if data[-3][4] < pre2MA20 and data[-2][4] < preMA20 and MA20 < preMA20:
-        return True
-    return False
 
 
 class Strategy5(object):
@@ -103,11 +84,36 @@ class Strategy5(object):
                      '模式: ' + '一键平仓'])
                 user.notifier.notify(msg)
 
+    def canDoLong(self):
+        MA20 = getMA(self.kline30m, 20)
+        preMA20 = getMA(self.kline30m, 20, -1)
+        pre2MA20 = getMA(self.kline30m, 20, -2)
+        _1hMA20 = getMA(self.kline1h, 20)
+        _1hPreMA20 = getMA(self.kline1h, 20, -1)
+        if self.kline30m[-3][4] > pre2MA20 and self.kline30m[-2][4] > preMA20 and MA20 > preMA20 and (
+                (_1hMA20 < _1hPreMA20 and self.kline30m[-3][4] <= MA20) or
+                (_1hMA20 > _1hPreMA20 and (time.time() - self.kline30m['k']['t']) > 1799)
+        ):
+            return True
+        return False
+
+    def canDoShort(self):
+        MA20 = getMA(self.kline30m, 20)
+        preMA20 = getMA(self.kline30m, 20, -1)
+        pre2MA20 = getMA(self.kline30m, 20, -2)
+        _1hMA20 = getMA(self.kline1h, 20)
+        _1hPreMA20 = getMA(self.kline1h, 20, -1)
+        if self.kline30m[-3][4] < pre2MA20 and self.kline30m[-2][4] < preMA20 and MA20 < preMA20 and (
+                (_1hMA20 > _1hPreMA20 and self.kline30m[-3][4] >= MA20) or
+                (_1hMA20 < _1hPreMA20 and (time.time() - self.kline30m['k']['t']) > 1799)
+        ):
+            return True
+        return False
+
     def strategy(self):
-        data = self.kline30m
-        if canDoLong(data):
+        if self.canDoLong():
             self.clearPosition('short')
             self.doLong()
-        elif canDoShort(data):
+        elif self.canDoShort():
             self.clearPosition('long')
             self.doShort()

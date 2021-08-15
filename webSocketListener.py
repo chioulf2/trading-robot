@@ -88,16 +88,12 @@ class WebSocketListener(object):
                 return
             if message['k']['i'] == '15m':
                 updateKline(self.strategy.kline15m, message)
-                if (time.time() - self.strategy.klineTime) / 60 < 1:
-                    return
-                self.strategy.klineTime = time.time()
                 if self.strategy is not None:
                     self.strategy.strategy()
             elif message['k']['i'] == '30m':
                 updateKline(self.strategy.kline30m, message)
-                if (time.time() - message['k']['t']) > 1799:
-                    if self.strategy is not None:
-                        self.strategy.strategy()
+                if self.strategy is not None:
+                    self.strategy.strategy()
             elif message['k']['i'] == '1h':
                 updateKline(self.strategy.kline1h, message)
 
