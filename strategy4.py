@@ -21,59 +21,6 @@ except ImportError:
     import _thread as thread
 
 
-def trend(data):
-    msg = ''
-    status = ''
-    [MB, UP, LB, PB, BW] = getBoll(data, 0, globalVar['P'])
-    [preMB, preUP, preLB, prePB, preBW] = getBoll(data, -1, globalVar['P'])
-    currentPrice = float(data[-1][4])
-    if (currentPrice > UP or currentPrice < LB) and preBW < BW < 0.035:
-        if currentPrice > UP and abs(currentPrice - UP) / UP > 0.006:
-            msg = '趋势开多 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
-            status = 'up'
-        if currentPrice < LB and abs(currentPrice - LB) / LB > 0.006:
-            msg = '趋势开空 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
-            status = 'down'
-    return {'status': status, 'msg': msg}
-
-
-def trendOver(data):
-    msg = ''
-    status = False
-    MA20 = getMA(data, 20)
-    currentPrice = float(data[-1][4])
-    if (self.mode == 'trendDown' and currentPrice > MA20 and (
-            currentPrice - MA20) / MA20 > 0.004) or (self.mode == 'trendUp' and currentPrice < MA20 and (
-            MA20 - currentPrice) / MA20 > 0.004):
-        self.mode = 'trendOver'
-        if currentPrice > MA20:
-            msg = '下跌趋势结束 当前价格: ' + str(currentPrice) + ' MA20: ' + str(MA20)
-        else:
-            msg = '上涨趋势结束 当前价格: ' + str(currentPrice) + ' MA20: ' + str(MA20)
-        status = True
-    return {'status': status, 'msg': msg}
-
-
-def shock(data):
-    msg = ''
-    status = ''
-    [MB, UP, LB, PB, BW] = getBoll(data, 0, globalVar['P'])
-    currentPrice = float(data[-1][4])
-    canOpen = (UP - LB) / MB > 0.02
-    if LB < currentPrice < UP:
-        if currentPrice < MB and currentPrice < LB * (1 + 0.002):
-            if canOpen:
-                msg = '震荡开单做多 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(
-                    LB)
-            status = 'LB'
-        if currentPrice > MB and currentPrice > UP * (1 - 0.002):
-            if canOpen:
-                msg = '震荡开单做空 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(
-                    LB)
-            status = 'UP'
-    return {'status': status, 'msg': msg, 'canOpen': canOpen}
-
-
 def isNeedleMarketStart(data):
     # 检测一天内的插针的情况 96 = 24*4
     bigNeedleCount = 0
@@ -110,6 +57,8 @@ class Strategy4(object):
         self.users = []
         # 模式: 分为 "trendOver（趋势结束）", "trendUp(趋势上涨)", "trendDown(趋势下跌)", "shockUp(震荡上涨)", "shockDown(震荡下跌)"
         self.mode = ''
+        self.isNeedleMarket = False     # 是否是针市
+        self.BBandsK = 2    # 多少倍标准差
         self.klineTime = time.time()
         # 获取历史k线数据，接下来的k线数据在webSocket中更新
         self.kline15m = globalVar['defaultUser'].api.getKline(globalVar['symbol'], '15m')
@@ -145,6 +94,56 @@ class Strategy4(object):
     def doShort(self, take_profit_scope, stop_scope):
         batchDoShort(self.users, globalVar['symbol'], take_profit_scope, stop_scope)
 
+    def trendOver(self, data):
+        msg = ''
+        status = False
+        MA20 = getMA(data, 20)
+        currentPrice = float(data[-1][4])
+        if (self.mode == 'trendDown' and currentPrice > MA20 and (
+                currentPrice - MA20) / MA20 > 0.004) or (self.mode == 'trendUp' and currentPrice < MA20 and (
+                MA20 - currentPrice) / MA20 > 0.004):
+            self.mode = 'trendOver'
+            if currentPrice > MA20:
+                msg = '下跌趋势结束 当前价格: ' + str(currentPrice) + ' MA20: ' + str(MA20)
+            else:
+                msg = '上涨趋势结束 当前价格: ' + str(currentPrice) + ' MA20: ' + str(MA20)
+            status = True
+        return {'status': status, 'msg': msg}
+
+    def shock(self, data):
+        msg = ''
+        status = ''
+        [MB, UP, LB, PB, BW] = getBoll(data, 0, self.BBandsK)
+        currentPrice = float(data[-1][4])
+        canOpen = (UP - LB) / MB > 0.02
+        if LB < currentPrice < UP:
+            if currentPrice < MB and currentPrice < LB * (1 + 0.002):
+                if canOpen:
+                    msg = '震荡开单做多 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(
+                        LB)
+                status = 'LB'
+            if currentPrice > MB and currentPrice > UP * (1 - 0.002):
+                if canOpen:
+                    msg = '震荡开单做空 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(
+                        LB)
+                status = 'UP'
+        return {'status': status, 'msg': msg, 'canOpen': canOpen}
+
+    def trend(self, data):
+        msg = ''
+        status = ''
+        [MB, UP, LB, PB, BW] = getBoll(data, 0, self.BBandsK)
+        [preMB, preUP, preLB, prePB, preBW] = getBoll(data, -1, self.BBandsK)
+        currentPrice = float(data[-1][4])
+        if (currentPrice > UP or currentPrice < LB) and preBW < BW < 0.035:
+            if currentPrice > UP and abs(currentPrice - UP) / UP > 0.006:
+                msg = '趋势开多 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
+                status = 'up'
+            if currentPrice < LB and abs(currentPrice - LB) / LB > 0.006:
+                msg = '趋势开空 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
+                status = 'down'
+        return {'status': status, 'msg': msg}
+
     def clearPosition(self, p):
         for user in self.users:
             if user.position == p and round((time.time() - user.last_time) / 15 * 60, 2) > 1:
@@ -175,27 +174,27 @@ class Strategy4(object):
             return
         self.klineTime = time.time()
         data = self.kline15m
-        if not globalVar['isNeedleMarket']:
+        if not self.isNeedleMarket:
             if not isNeedleMarketStart(data):
                 # 继续非针市
                 self.DFA(data)
             else:
                 # 开始针市
-                globalVar['isNeedleMarket'] = True
-                globalVar['P'] = 3
+                self.isNeedleMarket = True
+                self.BBandsK = 3
                 self.DFA(data)
         else:
             if isNeedleMarketEnd(data):
                 # 结束针市
-                globalVar['isNeedleMarket'] = False
-                globalVar['P'] = 2
+                self.isNeedleMarket = False
+                self.BBandsK = 2
                 self.DFA(data)
             else:
                 # 继续针市
                 self.DFA(data)
 
     def DFA(self, data):
-        t = trend(data)
+        t = self.trend(data)
         if t['status'] == 'up':
             # 单边向上行情，平空，开多
             self.mode = 'trendUp'
@@ -209,7 +208,7 @@ class Strategy4(object):
             self.sendMsgWhenNoPosition(t['msg'])
             self.doShort(0.02, 0.01)
         elif self.mode in ['trendUp', 'trendDown']:
-            tOver = trendOver(data)
+            tOver = self.trendOver(data)
             if tOver['status'] and self.mode == 'trendUp':
                 # 单边向上行情结束，平多
                 self.mode = 'trendOver'
@@ -222,7 +221,7 @@ class Strategy4(object):
                 self.sendMsg(tOver['msg'])
         elif self.mode in ['shockUp', 'shockDown', 'trendOver']:
             # 震荡行情
-            s = shock(data)
+            s = self.shock(data)
             if s['status'] == 'UP':
                 # 震荡到上轨附近，平多，开空
                 self.mode = 'shockDown'
