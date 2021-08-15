@@ -26,21 +26,7 @@ def removeUser(strategy, webSocketPool, api_key):
             break
 
 
-def kline15m(strategy):
-    # 获取历史k线数据
-    data = globalVar['defaultUser'].api.getKline(globalVar['symbol'], '15m')
-    globalVar['kline15m'] = data
-    # 接下来的k线数据在webSocket中更新
-    kline = globalVar['symbol'].lower() + '@kline_' + '15m'
-    listener = WebSocketListener(None, kline, strategy)
+def kline(strategy, interval):
+    listener = WebSocketListener(None, interval, strategy)
     listener.listenOnThread()
 
-
-def kline30m(strategy):
-    # 获取历史k线数据
-    data = globalVar['defaultUser'].api.getKline(globalVar['symbol'], '30m')
-    globalVar['kline30m'] = data
-    # 接下来的k线数据在webSocket中更新
-    kline = globalVar['symbol'].lower() + '@kline_' + '30m'
-    listener = WebSocketListener(None, kline, strategy)
-    listener.listenOnThread()

@@ -13,7 +13,7 @@ import time
 from config import globalVar
 from util import getBoll, getMA, getHumanReadTime, isNeedle, isBigNeedle
 from common import batchDoShort, batchDoLong
-from method import kline15m, clearPosition
+from method import kline, clearPosition
 
 try:
     import thread
@@ -108,7 +108,10 @@ class Strategy4(object):
 
     def __init__(self):
         self.users = []
-        kline15m(self)
+        self.klineTime = time.time()
+        # 获取历史k线数据，接下来的k线数据在webSocket中更新
+        self.kline15m = globalVar['defaultUser'].api.getKline(globalVar['symbol'], '15m')
+        kline(self, '15m')
 
     def add(self, user):
         clearPosition(user)
@@ -166,7 +169,7 @@ class Strategy4(object):
                 user.notifier.notify(msg)
 
     def strategy(self):
-        data = globalVar['kline15m']
+        data = self.kline15m
         if not globalVar['isNeedleMarket']:
             if not isNeedleMarketStart(data):
                 # 继续非针市

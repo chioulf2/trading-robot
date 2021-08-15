@@ -25,9 +25,11 @@ def updateKline(kline, message):
 
 class WebSocketListener(object):
 
-    def __init__(self, user=None, streamName=None, strategy=None):
+    def __init__(self, user=None, interval=None, strategy=None):
         self.user = user
-        self.streamName = streamName
+        self.interval = interval
+        self.listenTime = time.time()
+        self.streamName = globalVar['symbol'].lower() + '@kline_' + interval
         self.strategy = strategy
         self.ws = None
 
@@ -79,28 +81,25 @@ class WebSocketListener(object):
         elif message['e'] == "ORDER_TRADE_UPDATE":
             self.handleClosePosition(message)
         elif message['e'] == "kline":
+            # 大于23小时重连（每24小时服务器会断开连接）
+            if (time.time() - self.listenTime) / 3600 > 23:
+                ws.close()
+                self.listenStreams()
+                return
             if message['k']['i'] == '15m':
-                # 大于23小时重连（每24小时服务器会断开连接）
-                if (time.time() - globalVar['listenTime']) / 3600 > 23:
-                    ws.close()
-                    self.listenStreams()
+                updateKline(self.strategy.kline15m, message)
+                if (time.time() - self.strategy.klineTime) / 60 < 1:
                     return
-                updateKline(globalVar['kline15m'], message)
-                if (time.time() - globalVar['klineTime']) / 60 < 1:
-                    return
-                globalVar['klineTime'] = time.time()
+                self.strategy.klineTime = time.time()
                 if self.strategy is not None:
                     self.strategy.strategy()
             elif message['k']['i'] == '30m':
-                # 大于23小时重连（每24小时服务器会断开连接）
-                if (time.time() - globalVar['listen30mTime']) / 3600 > 23:
-                    ws.close()
-                    self.listenStreams()
-                    return
-                updateKline(globalVar['kline30m'], message)
+                updateKline(self.strategy.kline30m, message)
                 if (time.time() - message['k']['t']) > 1799:
                     if self.strategy is not None:
                         self.strategy.strategy()
+            elif message['k']['i'] == '1h':
+                updateKline(self.strategy.kline1h, message)
 
     def on_error(self, ws, error):
         print(ws)
@@ -118,7 +117,7 @@ class WebSocketListener(object):
         print('before 监听WebSocket')
         if self.streamName:
             streamNames = '/'.join([self.streamName])
-            globalVar['listenTime'] = time.time()
+            self.listenTime = time.time()
         else:
             streamNames = '/'.join([self.user.api.getListenKey()])
         websocket.enableTrace(True)

@@ -12,7 +12,7 @@ import time
 from config import globalVar
 from util import getMA, getHumanReadTime
 from common import batchDoSimpleLong, batchDoSimpleShort
-from method import kline30m, clearPosition
+from method import kline, clearPosition
 
 try:
     import thread
@@ -42,7 +42,11 @@ class Strategy5(object):
 
     def __init__(self):
         self.users = []
-        kline30m(self)
+        # 获取历史k线数据，接下来的k线数据在webSocket中更新
+        self.kline30m = globalVar['defaultUser'].api.getKline(globalVar['symbol'], '30m')
+        self.kline1h = globalVar['defaultUser'].api.getKline(globalVar['symbol'], '1h')
+        kline(self, '30m')
+        kline(self, '1h')
 
     def add(self, user):
         clearPosition(user)
@@ -100,7 +104,7 @@ class Strategy5(object):
                 user.notifier.notify(msg)
 
     def strategy(self):
-        data = globalVar['kline30m']
+        data = self.kline30m
         if canDoLong(data):
             self.clearPosition('short')
             self.doLong()
