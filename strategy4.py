@@ -42,10 +42,10 @@ def trendOver(data):
     status = False
     MA20 = getMA(data, 20)
     currentPrice = float(data[-1][4])
-    if (globalVar['mode'] == 'trendDown' and currentPrice > MA20 and (
-            currentPrice - MA20) / MA20 > 0.004) or (globalVar['mode'] == 'trendUp' and currentPrice < MA20 and (
+    if (self.mode == 'trendDown' and currentPrice > MA20 and (
+            currentPrice - MA20) / MA20 > 0.004) or (self.mode == 'trendUp' and currentPrice < MA20 and (
             MA20 - currentPrice) / MA20 > 0.004):
-        globalVar['mode'] = 'trendOver'
+        self.mode = 'trendOver'
         if currentPrice > MA20:
             msg = '下跌趋势结束 当前价格: ' + str(currentPrice) + ' MA20: ' + str(MA20)
         else:
@@ -108,6 +108,8 @@ class Strategy4(object):
 
     def __init__(self):
         self.users = []
+        # 模式: 分为 "trendOver（趋势结束）", "trendUp(趋势上涨)", "trendDown(趋势下跌)", "shockUp(震荡上涨)", "shockDown(震荡下跌)"
+        self.mode = ''
         self.klineTime = time.time()
         # 获取历史k线数据，接下来的k线数据在webSocket中更新
         self.kline15m = globalVar['defaultUser'].api.getKline(globalVar['symbol'], '15m')
@@ -196,41 +198,41 @@ class Strategy4(object):
         t = trend(data)
         if t['status'] == 'up':
             # 单边向上行情，平空，开多
-            globalVar['mode'] = 'trendUp'
+            self.mode = 'trendUp'
             self.clearPosition('short')
             self.sendMsgWhenNoPosition(t['msg'])
             self.doLong(0.02, 0.01)
         elif t['status'] == 'down':
             # 单边向下行情，平多，开空
-            globalVar['mode'] = 'trendDown'
+            self.mode = 'trendDown'
             self.clearPosition('long')
             self.sendMsgWhenNoPosition(t['msg'])
             self.doShort(0.02, 0.01)
-        elif globalVar['mode'] in ['trendUp', 'trendDown']:
+        elif self.mode in ['trendUp', 'trendDown']:
             tOver = trendOver(data)
-            if tOver['status'] and globalVar['mode'] == 'trendUp':
+            if tOver['status'] and self.mode == 'trendUp':
                 # 单边向上行情结束，平多
-                globalVar['mode'] = 'trendOver'
+                self.mode = 'trendOver'
                 self.clearPosition('long')
                 self.sendMsg(tOver['msg'])
-            elif tOver['status'] and globalVar['mode'] == 'trendDown':
+            elif tOver['status'] and self.mode == 'trendDown':
                 # 单边向下行情结束，平空
-                globalVar['mode'] = 'trendOver'
+                self.mode = 'trendOver'
                 self.clearPosition('short')
                 self.sendMsg(tOver['msg'])
-        elif globalVar['mode'] in ['shockUp', 'shockDown', 'trendOver']:
+        elif self.mode in ['shockUp', 'shockDown', 'trendOver']:
             # 震荡行情
             s = shock(data)
             if s['status'] == 'UP':
                 # 震荡到上轨附近，平多，开空
-                globalVar['mode'] = 'shockDown'
+                self.mode = 'shockDown'
                 self.clearPosition('long')
                 if s['canOpen']:
                     self.sendMsgWhenNoPosition(s['msg'])
                     self.doShort(0.01, 0.01)
             elif s['status'] == 'LB':
                 # 震荡到上轨附近，平空，开多
-                globalVar['mode'] = 'shockUp'
+                self.mode = 'shockUp'
                 self.clearPosition('short')
                 if s['canOpen']:
                     self.sendMsgWhenNoPosition(s['msg'])

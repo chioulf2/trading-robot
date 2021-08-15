@@ -27,7 +27,6 @@ def config():
 
     return {
         'symbol': symbol,  # 交易对象
-        'mode': '',  # 模式: 分为 "trendOver（趋势结束）", "trendUp(趋势上涨)", "trendDown(趋势下跌)", "shockUp(震荡上涨)", "shockDown(震荡下跌)"
         'init_time': init_time,  # 初始化时间
         'userConfig': userConfig,  # 用户配置: api-key, secret-key, notify-uid, 开仓数, 合约倍数
         'defaultUser': defaultUser,  # 默认用户，用于监听k线数据
