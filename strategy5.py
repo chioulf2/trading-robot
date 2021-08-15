@@ -90,8 +90,11 @@ class Strategy5(object):
         pre2MA20 = getMA(self.kline30m, 20, -2)
         _1hMA20 = getMA(self.kline1h, 20)
         _1hPreMA20 = getMA(self.kline1h, 20, -1)
-        if self.kline30m[-3][4] > pre2MA20 and self.kline30m[-2][4] > preMA20 and MA20 > preMA20 and (
-                (_1hMA20 < _1hPreMA20 and self.kline30m[-3][4] <= MA20) or
+        currentPrice = float(self.kline30m[-1][4])
+        prePrice = float(self.kline30m[-2][4])
+        pre2Price = float(self.kline30m[-3][4])
+        if pre2Price > pre2MA20 and prePrice > preMA20 and MA20 > preMA20 and (
+                (_1hMA20 < _1hPreMA20 and currentPrice <= MA20) or
                 (_1hMA20 > _1hPreMA20 and (time.time() - self.kline30m['k']['t']) > 1799)
         ):
             return True
@@ -103,8 +106,11 @@ class Strategy5(object):
         pre2MA20 = getMA(self.kline30m, 20, -2)
         _1hMA20 = getMA(self.kline1h, 20)
         _1hPreMA20 = getMA(self.kline1h, 20, -1)
-        if self.kline30m[-3][4] < pre2MA20 and self.kline30m[-2][4] < preMA20 and MA20 < preMA20 and (
-                (_1hMA20 > _1hPreMA20 and self.kline30m[-3][4] >= MA20) or
+        currentPrice = float(self.kline30m[-1][4])
+        prePrice = float(self.kline30m[-2][4])
+        pre2Price = float(self.kline30m[-3][4])
+        if pre2Price < pre2MA20 and prePrice < preMA20 and MA20 < preMA20 and (
+                (_1hMA20 > _1hPreMA20 and currentPrice >= MA20) or
                 (_1hMA20 < _1hPreMA20 and (time.time() - self.kline30m['k']['t']) > 1799)
         ):
             return True
