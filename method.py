@@ -28,7 +28,7 @@ def kline15m(strategy):
     # 接下来的k线数据在webSocket中更新
     kline = globalVar['symbol'].lower() + '@kline_' + '15m'
     listener = WebSocketListener(None, kline, strategy)
-    listener.listen()
+    listener.listenOnThread()
 
 
 def kline30m(strategy):
@@ -38,4 +38,4 @@ def kline30m(strategy):
     # 接下来的k线数据在webSocket中更新
     kline = globalVar['symbol'].lower() + '@kline_' + '30m'
     listener = WebSocketListener(None, kline, strategy)
-    listener.listen()
+    listener.listenOnThread()

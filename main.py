@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # coding=utf-8
+import time
 from webSocketListener import WebSocketListener
 from user import User
 from strategy4 import Strategy4
@@ -24,6 +25,9 @@ def main():
         elif u[4] == '5':
             addUser(strategy5, webSocketPool, u)
     # MessageQueue(strategy)
+    while True:
+        time.sleep(3600)
+        print('主线程 心跳')
 
 
 main()
