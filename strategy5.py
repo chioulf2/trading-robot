@@ -12,7 +12,7 @@ import time
 from config import globalVar
 from util import getMA, getHumanReadTime
 from common import batchDoSimpleLong, batchDoSimpleShort
-from method import kline30m
+from method import kline30m, clearPosition
 
 try:
     import thread
@@ -45,11 +45,13 @@ class Strategy5(object):
         kline30m(self)
 
     def add(self, user):
+        clearPosition(user)
         self.users.append(user)
 
     def remove(self, api_key):
         for i in range(len(self.users)):
             if self.users[i].api_key == api_key:
+                clearPosition(self.users[i])
                 del self.users[i]
                 break
 

@@ -1,6 +1,7 @@
 import time
 from binanceApi import BinanceApi
 from notify import NotifyService
+from config import globalVar
 
 
 class User(object):

@@ -3,6 +3,11 @@ from webSocketListener import WebSocketListener
 from config import globalVar
 
 
+def clearPosition(user):
+    user.api.deleteAllOrder(globalVar['symbol'])
+    user.api.deleteAllPosition(globalVar['symbol'])
+
+
 def addUser(strategy, webSocketPool, u):
     if u[-1] == 'true':
         return

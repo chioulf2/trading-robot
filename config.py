@@ -27,7 +27,7 @@ def config():
 
     return {
         'symbol': symbol,  # 交易对象
-        'mode': 'trendOver',  # 模式: 分为 "trendOver（趋势结束）", "trendUp(趋势上涨)", "trendDown(趋势下跌)", "shockUp(震荡上涨)", "shockDown(震荡下跌)"
+        'mode': '',  # 模式: 分为 "trendOver（趋势结束）", "trendUp(趋势上涨)", "trendDown(趋势下跌)", "shockUp(震荡上涨)", "shockDown(震荡下跌)"
         'kline15m': [],    # 15分钟k线数据
         'kline30m': [],    # 30分钟k线数据
         'init_time': init_time,  # 初始化时间

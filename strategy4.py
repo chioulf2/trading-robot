@@ -13,7 +13,7 @@ import time
 from config import globalVar
 from util import getBoll, getMA, getHumanReadTime, isNeedle, isBigNeedle
 from common import batchDoShort, batchDoLong
-from method import kline15m
+from method import kline15m, clearPosition
 
 try:
     import thread
@@ -111,11 +111,13 @@ class Strategy4(object):
         kline15m(self)
 
     def add(self, user):
+        clearPosition(user)
         self.users.append(user)
 
     def remove(self, api_key):
         for i in range(len(self.users)):
             if self.users[i].api_key == api_key:
+                clearPosition(self.users[i])
                 del self.users[i]
                 break
 
