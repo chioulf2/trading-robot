@@ -29,7 +29,9 @@ class WebSocketListener(object):
         self.user = user
         self.interval = interval
         self.listenTime = time.time()
-        self.streamName = globalVar['symbol'].lower() + '@kline_' + interval
+        self.streamName = None
+        if interval is not None:
+            self.streamName = globalVar['symbol'].lower() + '@kline_' + interval
         self.strategy = strategy
         self.ws = None
 
