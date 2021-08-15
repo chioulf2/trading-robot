@@ -123,14 +123,14 @@ class Strategy4(object):
         if msg == '':
             return
         for user in self.users:
-            if not user.position:
-                user.notifier.notify(msg)
+            user.notifier.notify(msg)
 
     def sendMsgWhenNoPosition(self, msg):
         if msg == '':
             return
         for user in self.users:
-            user.notifier.notify(msg)
+            if not user.position:
+                user.notifier.notify(msg)
 
     def doLong(self, take_profit_scope, stop_scope):
         batchDoLong(self.users, globalVar['symbol'], take_profit_scope, stop_scope)

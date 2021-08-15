@@ -57,14 +57,14 @@ class Strategy5(object):
         if msg == '':
             return
         for user in self.users:
-            if not user.position:
-                user.notifier.notify(msg)
+            user.notifier.notify(msg)
 
     def sendMsgWhenNoPosition(self, msg):
         if msg == '':
             return
         for user in self.users:
-            user.notifier.notify(msg)
+            if not user.position:
+                user.notifier.notify(msg)
 
     def doLong(self):
         batchDoSimpleLong(self.users, globalVar['symbol'])
