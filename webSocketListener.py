@@ -10,6 +10,19 @@ except ImportError:
     import _thread as thread
 
 
+def updateKline(kline, message):
+    newItem = [message['k']['t'], message['k']['o'], message['k']['h'], message['k']['l'],
+               message['k']['c'],
+               message['k']['v'], message['k']['T'], message['k']['q'], message['k']['n'],
+               message['k']['V'],
+               message['k']['Q'], message['k']['B']]
+    if kline[-1][0] != message['k']['t']:
+        kline.append(newItem)
+        del kline[0]
+    else:
+        kline[-1] = newItem
+
+
 class WebSocketListener(object):
 
     def __init__(self, user=None, streamName=None, strategy=None):
@@ -66,26 +79,28 @@ class WebSocketListener(object):
         elif message['e'] == "ORDER_TRADE_UPDATE":
             self.handleClosePosition(message)
         elif message['e'] == "kline":
-            # 大于23小时重连（每24小时服务器会断开连接）
-            if (time.time() - globalVar['listenTime']) / 3600 > 23:
-                ws.close()
-                self.listenStreams()
-                return
-            if (time.time() - globalVar['klineTime']) / 60 < 1:
-                return
-            globalVar['klineTime'] = time.time()
-            newItem = [message['k']['t'], message['k']['o'], message['k']['h'], message['k']['l'],
-                       message['k']['c'],
-                       message['k']['v'], message['k']['T'], message['k']['q'], message['k']['n'],
-                       message['k']['V'],
-                       message['k']['Q'], message['k']['B']]
-            if globalVar['kline'][-1][0] != message['k']['t']:
-                globalVar['kline'].append(newItem)
-                del globalVar['kline'][0]
-            else:
-                globalVar['kline'][-1] = newItem
-            if self.strategy is not None:
-                self.strategy.strategy()
+            if message['k']['i'] == '15m':
+                # 大于23小时重连（每24小时服务器会断开连接）
+                if (time.time() - globalVar['listenTime']) / 3600 > 23:
+                    ws.close()
+                    self.listenStreams()
+                    return
+                updateKline(globalVar['kline15m'], message)
+                if (time.time() - globalVar['klineTime']) / 60 < 1:
+                    return
+                globalVar['klineTime'] = time.time()
+                if self.strategy is not None:
+                    self.strategy.strategy()
+            elif message['k']['i'] == '30m':
+                # 大于23小时重连（每24小时服务器会断开连接）
+                if (time.time() - globalVar['listen30mTime']) / 3600 > 23:
+                    ws.close()
+                    self.listenStreams()
+                    return
+                updateKline(globalVar['kline30m'], message)
+                if (time.time() - message['k']['t']) > 899:
+                    if self.strategy is not None:
+                        self.strategy.strategy()
 
     def on_error(self, ws, error):
         print(ws)

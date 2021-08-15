@@ -2,7 +2,8 @@
 # coding=utf-8
 from webSocketListener import WebSocketListener
 from user import User
-from strategy4 import Strategy
+from strategy4 import Strategy4
+from strategy5 import Strategy5
 from config import globalVar
 from messageQueue import MessageQueue
 from method import addUser
@@ -14,18 +15,15 @@ except ImportError:
 
 
 def main():
-    strategy = Strategy()
+    strategy4 = Strategy4()
+    strategy5 = Strategy5()
     webSocketPool = []
     for u in globalVar['userConfig']:
-        addUser(strategy, webSocketPool, u)
+        if u[4] == '4':
+            addUser(strategy4, webSocketPool, u)
+        elif u[4] == '5':
+            addUser(strategy5, webSocketPool, u)
     # MessageQueue(strategy)
-    # 获取历史k线数据
-    data = globalVar['defaultUser'].api.getKline(globalVar['symbol'], globalVar['interval'])
-    globalVar['kline'] = data
-    # 接下来的k线数据在webSocket中更新
-    kline = globalVar['symbol'].lower() + '@kline_' + '15m'
-    listener = WebSocketListener(None, kline, strategy)
-    listener.listen()
 
 
 main()

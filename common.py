@@ -1,6 +1,28 @@
 from util import getHumanReadTime
 
 
+def simpleLong(user, symbol, quantity):
+    if user.position:
+        return
+    user.position = 'long'
+    user.api.level(symbol, user.leverage)
+    longOrderId = user.api.order(symbol, 'BUY', 'LONG', 'MARKET', quantity, '')['orderId']
+    price = user.api.getOrderPrice(symbol, longOrderId)
+    msg = '做多 ' + symbol + ' 量：' + quantity + ' 均价：' + price + ' 时间：' + getHumanReadTime()
+    user.notifier.notify(msg)
+
+
+def simpleShort(user, symbol, quantity):
+    if user.position:
+        return
+    user.position = 'short'
+    user.api.level(symbol, user.leverage)
+    shortOrderId = user.api.order(symbol, 'SELL', 'SHORT', 'MARKET', quantity, '')['orderId']
+    price = user.api.getOrderPrice(symbol, shortOrderId)
+    msg = '做空 ' + symbol + ' 量：' + quantity + ' 均价：' + price + ' 时间：' + getHumanReadTime()
+    user.notifier.notify(msg)
+
+
 def long(user, symbol, quantity, take_profit_scope, stop_scope):
     if user.position:
         return
@@ -63,3 +85,13 @@ def batchDoLong(users, symbol, take_profit_scope, stop_scope):
 def batchDoShort(users, symbol, take_profit_scope, stop_scope):
     for user in users:
         short(user, symbol, user.quantity, take_profit_scope, stop_scope)
+
+
+def batchDoSimpleLong(users, symbol):
+    for user in users:
+        simpleLong(user, symbol, user.quantity)
+
+
+def batchDoSimpleShort(users, symbol):
+    for user in users:
+        simpleShort(user, symbol, user.quantity)
