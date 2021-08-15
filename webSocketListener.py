@@ -98,7 +98,7 @@ class WebSocketListener(object):
                     self.listenStreams()
                     return
                 updateKline(globalVar['kline30m'], message)
-                if (time.time() - message['k']['t']) > 899:
+                if (time.time() - message['k']['t']) > 1799:
                     if self.strategy is not None:
                         self.strategy.strategy()
 
