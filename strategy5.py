@@ -1,9 +1,9 @@
 """
 30分钟布林线量化交易模板
 1. 做多：
-    前两次收盘价格 > MA20，当前MA20 > 前一次MA20，(1小时中轨向下 and 价格 <= MA20) or (1小时中轨向上 and 时间在当前k线结束的时候)
+    前两次收盘价格 > MA20，当前MA20 > 前一次MA20，(1小时中轨向下 and 价格 <= MA20) or (时间在当前k线结束的时候)
 2. 做空：
-    前两次收盘价格 < MA20，当前MA20 < 前一次MA20，(1小时中轨向上 and 价格 >= MA20) or (1小时中轨向下 and 时间在当前k线结束的时候)
+    前两次收盘价格 < MA20，当前MA20 < 前一次MA20，(1小时中轨向上 and 价格 >= MA20) or (时间在当前k线结束的时候)
 平多时，开空；平空时，开多。
 """
 
@@ -96,7 +96,7 @@ class Strategy5(object):
         currentKlineTime = self.kline30m[-1][0]
         if pre2Price > pre2MA20 and prePrice > preMA20 and MA20 > preMA20 and (
                 (_1hMA20 < _1hPreMA20 and currentPrice <= MA20) or
-                (_1hMA20 > _1hPreMA20 and (time.time() - currentKlineTime) > 1799)
+                ((time.time() - currentKlineTime) > 1799)
         ):
             return True
         return False
@@ -113,7 +113,7 @@ class Strategy5(object):
         currentKlineTime = self.kline30m[-1][0]
         if pre2Price < pre2MA20 and prePrice < preMA20 and MA20 < preMA20 and (
                 (_1hMA20 > _1hPreMA20 and currentPrice >= MA20) or
-                (_1hMA20 < _1hPreMA20 and (time.time() - currentKlineTime) > 1799)
+                ((time.time() - currentKlineTime) > 1799)
         ):
             return True
         return False
