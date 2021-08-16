@@ -96,7 +96,7 @@ class Strategy5(object):
         currentKlineTime = self.kline30m[-1][0]
         if pre2Price > pre2MA20 and prePrice > preMA20 and MA20 > preMA20 and (
                 (_1hMA20 < _1hPreMA20 and currentPrice <= MA20) or
-                ((time.time() - currentKlineTime) > 1799)
+                ((time.time() - currentKlineTime) > 1790)
         ):
             return True
         return False
@@ -113,7 +113,7 @@ class Strategy5(object):
         currentKlineTime = self.kline30m[-1][0]
         if pre2Price < pre2MA20 and prePrice < preMA20 and MA20 < preMA20 and (
                 (_1hMA20 > _1hPreMA20 and currentPrice >= MA20) or
-                ((time.time() - currentKlineTime) > 1799)
+                ((time.time() - currentKlineTime) > 1790)
         ):
             return True
         return False

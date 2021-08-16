@@ -17,10 +17,12 @@ def updateKline(kline, message):
                message['k']['V'],
                message['k']['Q'], message['k']['B']]
     if kline[-1][0] != message['k']['t']:
-        kline.append(newItem)
-        del kline[0]
+        # kline.append(newItem)
+        # del kline[0]
+        kline = globalVar['defaultUser'].api.getKline(globalVar['symbol'], message['k']['i'])
     else:
         kline[-1] = newItem
+    return kline
 
 
 class WebSocketListener(object):
@@ -89,15 +91,15 @@ class WebSocketListener(object):
                 self.listenStreams()
                 return
             if message['k']['i'] == '15m':
-                updateKline(self.strategy.kline15m, message)
+                self.strategy.kline15m = updateKline(self.strategy.kline15m, message)
                 if self.strategy is not None:
                     self.strategy.strategy()
             elif message['k']['i'] == '30m':
-                updateKline(self.strategy.kline30m, message)
+                self.strategy.kline30m = updateKline(self.strategy.kline30m, message)
                 if self.strategy is not None:
                     self.strategy.strategy()
             elif message['k']['i'] == '1h':
-                updateKline(self.strategy.kline1h, message)
+                self.strategy.kline1h = updateKline(self.strategy.kline1h, message)
 
     def on_error(self, ws, error):
         print(ws)
