@@ -102,7 +102,6 @@ class Strategy4(object):
         if (self.mode == 'trendDown' and currentPrice > MA20 and (
                 currentPrice - MA20) / MA20 > 0.004) or (self.mode == 'trendUp' and currentPrice < MA20 and (
                 MA20 - currentPrice) / MA20 > 0.004):
-            self.mode = 'trendOver'
             if currentPrice > MA20:
                 msg = '下跌趋势结束 当前价格: ' + str(currentPrice) + ' MA20: ' + str(MA20)
             else:
