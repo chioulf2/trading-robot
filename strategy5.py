@@ -93,7 +93,7 @@ class Strategy5(object):
         currentPrice = float(self.kline30m[-1][4])
         prePrice = float(self.kline30m[-2][4])
         pre2Price = float(self.kline30m[-3][4])
-        currentKlineTime = self.kline30m[-1][0]
+        currentKlineTime = self.kline30m[-1][0] / 1000
         if pre2Price > pre2MA20 and prePrice > preMA20 and MA20 > preMA20 and (
                 (_1hMA20 < _1hPreMA20 and currentPrice <= MA20) or
                 ((time.time() - currentKlineTime) > 1790)
@@ -110,7 +110,7 @@ class Strategy5(object):
         currentPrice = float(self.kline30m[-1][4])
         prePrice = float(self.kline30m[-2][4])
         pre2Price = float(self.kline30m[-3][4])
-        currentKlineTime = self.kline30m[-1][0]
+        currentKlineTime = self.kline30m[-1][0] / 1000
         if pre2Price < pre2MA20 and prePrice < preMA20 and MA20 < preMA20 and (
                 (_1hMA20 > _1hPreMA20 and currentPrice >= MA20) or
                 ((time.time() - currentKlineTime) > 1790)
