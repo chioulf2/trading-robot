@@ -17,9 +17,8 @@ def updateKline(kline, message):
                message['k']['V'],
                message['k']['Q'], message['k']['B']]
     if kline[-1][0] != message['k']['t']:
-        # kline.append(newItem)
-        # del kline[0]
-        kline = globalVar['defaultUser'].api.getKline(globalVar['symbol'], message['k']['i'])
+        kline.append(newItem)
+        del kline[0]
     else:
         kline[-1] = newItem
     return kline
