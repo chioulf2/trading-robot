@@ -134,11 +134,11 @@ class Strategy4(object):
         [MB, UP, LB, PB, BW] = getBoll(data, 0, self.BBandsK)
         [preMB, preUP, preLB, prePB, preBW] = getBoll(data, -1, self.BBandsK)
         currentPrice = float(data[-1][4])
-        if (currentPrice > UP or currentPrice < LB) and preBW < BW < 0.035:
-            if currentPrice > UP and abs(currentPrice - UP) / UP > 0.006:
+        if (currentPrice > UP or currentPrice < LB) and preBW < BW < 0.03:
+            if currentPrice > UP and abs(currentPrice - UP) / UP > 0.005:
                 msg = '趋势开多 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
                 status = 'up'
-            if currentPrice < LB and abs(currentPrice - LB) / LB > 0.006:
+            if currentPrice < LB and abs(currentPrice - LB) / LB > 0.005:
                 msg = '趋势开空 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
                 status = 'down'
         return {'status': status, 'msg': msg}
@@ -199,13 +199,13 @@ class Strategy4(object):
             self.mode = 'trendUp'
             self.clearPosition('short')
             self.sendMsgWhenNoPosition(t['msg'])
-            self.doLong(0.02, 0.01)
+            self.doLong(0.015, 0.01)
         elif t['status'] == 'down':
             # 单边向下行情，平多，开空
             self.mode = 'trendDown'
             self.clearPosition('long')
             self.sendMsgWhenNoPosition(t['msg'])
-            self.doShort(0.02, 0.01)
+            self.doShort(0.015, 0.01)
         elif self.mode in ['trendUp', 'trendDown']:
             tOver = self.trendOver(data)
             if tOver['status'] and self.mode == 'trendUp':
