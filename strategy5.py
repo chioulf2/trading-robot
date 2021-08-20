@@ -9,7 +9,7 @@
 
 import time
 from config import globalVar
-from util import getMA, getHumanReadTime
+from util import getMA, getHumanReadTime, getBoll
 from common import batchDoSimpleLong, batchDoSimpleShort
 from method import kline, clearPosition
 
@@ -84,7 +84,7 @@ class Strategy5(object):
                      '模式: ' + '一键平仓'])
                 user.notifier.notify(msg)
 
-    def canDoLong(self):
+    def first(self):
         MA20 = getMA(self.kline30m, 20)
         preMA20 = getMA(self.kline30m, 20, -1)
         pre2MA20 = getMA(self.kline30m, 20, -2)
@@ -96,10 +96,38 @@ class Strategy5(object):
         currentKlineTime = self.kline30m[-1][0] / 1000
         if pre2Price > pre2MA20 and prePrice > preMA20 and MA20 > preMA20 and (
                 (_1hMA20 < _1hPreMA20 and currentPrice <= MA20) or
-                ((time.time() - currentKlineTime) > 1500)
+                ((time.time() - currentKlineTime) > 1790)
         ):
-            return True
-        return False
+            return 'long'
+        elif  pre2Price < pre2MA20 and prePrice < preMA20 and MA20 < preMA20 and (
+                (_1hMA20 > _1hPreMA20 and currentPrice >= MA20) or
+                ((time.time() - currentKlineTime) > 1790)
+        ):
+            return 'short'
+        return ''
+
+    def second(self):
+        [MB, UP, LB, PB, BW] = getBoll(self.kline30m, 0)
+        [preMB, preUP, preLB, prePB, preBW] = getBoll(self.kline30m, -1)
+        [pre2MB, pre2UP, pre2LB, pre2PB, pre2BW] = getBoll(self.kline30m, -2)
+        MA20 = getMA(self.kline30m, 20)
+        preMA20 = getMA(self.kline30m, 20, -1)
+        pre2MA20 = getMA(self.kline30m, 20, -2)
+        _1hMA20 = getMA(self.kline1h, 20)
+        _1hPreMA20 = getMA(self.kline1h, 20, -1)
+        currentPrice = float(self.kline30m[-1][4])
+        prePrice = float(self.kline30m[-2][4])
+        pre2Price = float(self.kline30m[-3][4])
+        currentKlineTime = self.kline30m[-1][0] / 1000
+        if pre2Price>pre2UP and prePrice>preUP:
+            return 'long'
+        elif pre2Price<pre2LB and prePrice<preLB:
+            return 'short'
+        return ''
+
+
+    def canDoLong(self):
+        pass
 
     def canDoShort(self):
         MA20 = getMA(self.kline30m, 20)
@@ -113,7 +141,7 @@ class Strategy5(object):
         currentKlineTime = self.kline30m[-1][0] / 1000
         if pre2Price < pre2MA20 and prePrice < preMA20 and MA20 < preMA20 and (
                 (_1hMA20 > _1hPreMA20 and currentPrice >= MA20) or
-                ((time.time() - currentKlineTime) > 1500)
+                ((time.time() - currentKlineTime) > 1790)
         ):
             return True
         return False
