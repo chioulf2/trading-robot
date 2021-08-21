@@ -56,7 +56,7 @@ class Strategy4(object):
     def __init__(self):
         self.users = []
         # 模式: 分为 "trendOver（趋势结束）", "trendUp(趋势上涨)", "trendDown(趋势下跌)", "shockUp(震荡上涨)", "shockDown(震荡下跌)"
-        self.mode = ''
+        self.mode = 'trendOver'
         self.isNeedleMarket = False  # 是否是针市
         self.BBandsK = 2  # 多少倍标准差
         self.klineTime = time.time()
@@ -180,12 +180,14 @@ class Strategy4(object):
             else:
                 # 开始针市
                 self.isNeedleMarket = True
+                self.sendMsg('开始针市')
                 self.BBandsK = 3
                 self.DFA(data)
         else:
             if isNeedleMarketEnd(data):
                 # 结束针市
                 self.isNeedleMarket = False
+                self.sendMsg('结束针市')
                 self.BBandsK = 2
                 self.DFA(data)
             else:
