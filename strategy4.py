@@ -57,8 +57,8 @@ class Strategy4(object):
         self.users = []
         # 模式: 分为 "trendOver（趋势结束）", "trendUp(趋势上涨)", "trendDown(趋势下跌)", "shockUp(震荡上涨)", "shockDown(震荡下跌)"
         self.mode = ''
-        self.isNeedleMarket = False     # 是否是针市
-        self.BBandsK = 2    # 多少倍标准差
+        self.isNeedleMarket = False  # 是否是针市
+        self.BBandsK = 2  # 多少倍标准差
         self.klineTime = time.time()
         # 获取历史k线数据，接下来的k线数据在webSocket中更新
         self.kline15m = globalVar['defaultUser'].api.getKline(globalVar['symbol'], '15m')
@@ -192,7 +192,7 @@ class Strategy4(object):
                 # 继续针市
                 self.DFA(data)
 
-    def DFA(self, data):
+    def judgeTrend(self, data):
         t = self.trend(data)
         if t['status'] == 'up':
             # 单边向上行情，平空，开多
@@ -206,32 +206,41 @@ class Strategy4(object):
             self.clearPosition('long')
             self.sendMsgWhenNoPosition(t['msg'])
             self.doShort(0.015, 0.01)
-        elif self.mode in ['trendUp', 'trendDown']:
-            tOver = self.trendOver(data)
-            if tOver['status'] and self.mode == 'trendUp':
-                # 单边向上行情结束，平多
-                self.mode = 'trendOver'
-                self.clearPosition('long')
-                self.sendMsg(tOver['msg'])
-            elif tOver['status'] and self.mode == 'trendDown':
-                # 单边向下行情结束，平空
-                self.mode = 'trendOver'
-                self.clearPosition('short')
-                self.sendMsg(tOver['msg'])
+
+    def judgeTrendOver(self, data):
+        tOver = self.trendOver(data)
+        if tOver['status'] and self.mode == 'trendUp':
+            # 单边向上行情结束，平多
+            self.mode = 'trendOver'
+            self.clearPosition('long')
+            self.sendMsg(tOver['msg'])
+        elif tOver['status'] and self.mode == 'trendDown':
+            # 单边向下行情结束，平空
+            self.mode = 'trendOver'
+            self.clearPosition('short')
+            self.sendMsg(tOver['msg'])
+
+    def judgeShock(self, data):
+        # 震荡行情
+        s = self.shock(data)
+        if s['status'] == 'UP':
+            # 震荡到上轨附近，平多，开空
+            self.mode = 'shockDown'
+            self.clearPosition('long')
+            if s['canOpen']:
+                self.sendMsgWhenNoPosition(s['msg'])
+                self.doShort(0.01, 0.01)
+        elif s['status'] == 'LB':
+            # 震荡到上轨附近，平空，开多
+            self.mode = 'shockUp'
+            self.clearPosition('short')
+            if s['canOpen']:
+                self.sendMsgWhenNoPosition(s['msg'])
+                self.doLong(0.01, 0.01)
+
+    def DFA(self, data):
+        self.judgeTrend(data)
+        if self.mode in ['trendUp', 'trendDown']:
+            self.judgeTrendOver(data)
         elif self.mode in ['shockUp', 'shockDown', 'trendOver']:
-            # 震荡行情
-            s = self.shock(data)
-            if s['status'] == 'UP':
-                # 震荡到上轨附近，平多，开空
-                self.mode = 'shockDown'
-                self.clearPosition('long')
-                if s['canOpen']:
-                    self.sendMsgWhenNoPosition(s['msg'])
-                    self.doShort(0.01, 0.01)
-            elif s['status'] == 'LB':
-                # 震荡到上轨附近，平空，开多
-                self.mode = 'shockUp'
-                self.clearPosition('short')
-                if s['canOpen']:
-                    self.sendMsgWhenNoPosition(s['msg'])
-                    self.doLong(0.01, 0.01)
+            self.judgeShock(data)
