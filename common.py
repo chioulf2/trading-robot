@@ -1,10 +1,12 @@
 from util import getHumanReadTime
+import time
 
 
 def simpleLong(user, symbol, quantity):
     if user.position:
         return
     user.position = 'long'
+    user.last_open_time = time.time()
     user.api.level(symbol, user.leverage)
     longOrderId = user.api.order(symbol, 'BUY', 'LONG', 'MARKET', quantity, '')['orderId']
     price = user.api.getOrderPrice(symbol, longOrderId)
@@ -16,6 +18,7 @@ def simpleShort(user, symbol, quantity):
     if user.position:
         return
     user.position = 'short'
+    user.last_open_time = time.time()
     user.api.level(symbol, user.leverage)
     shortOrderId = user.api.order(symbol, 'SELL', 'SHORT', 'MARKET', quantity, '')['orderId']
     price = user.api.getOrderPrice(symbol, shortOrderId)
@@ -27,6 +30,7 @@ def long(user, symbol, quantity, take_profit_scope, stop_scope):
     if user.position:
         return
     user.position = 'long'
+    user.last_open_time = time.time()
     user.api.level(symbol, user.leverage)
     longOrderId = user.api.order(symbol, 'BUY', 'LONG', 'MARKET', quantity, '')['orderId']
     price = user.api.getOrderPrice(symbol, longOrderId)
@@ -54,6 +58,7 @@ def short(user, symbol, quantity, take_profit_scope, stop_scope):
     if user.position:
         return
     user.position = 'short'
+    user.last_open_time = time.time()
     user.api.level(symbol, user.leverage)
     shortOrderId = user.api.order(symbol, 'SELL', 'SHORT', 'MARKET', quantity, '')['orderId']
     price = user.api.getOrderPrice(symbol, shortOrderId)

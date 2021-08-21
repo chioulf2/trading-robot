@@ -21,7 +21,8 @@ class User(object):
         self.loss_count = 0  # 亏损次数
         self.orderMap = {}  # 止盈止损订单对
         self.position = None  # 是否持仓：'long', 'short', None
-        self.last_time = time.time()  # 上次平仓时间
+        self.last_close_time = time.time()  # 上次平仓时间
+        self.last_open_time = time.time()   # 上次开仓时间
         if level == '' or level is None:
             level = '1'
         self.leverage = level

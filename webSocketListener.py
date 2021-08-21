@@ -61,12 +61,12 @@ class WebSocketListener(object):
                          '亏损次数: ' + str(self.user.loss_count) + ' 次',
                          '总运行时长: ' + str(round((time.time() - globalVar['init_time']) / 3600, 2)) + ' 小时',
                          '总盈亏: ' + str(self.user.balance - self.user.init_balance) + ' U',
-                         '本次开仓时长: ' + str(round((time.time() - self.user.last_time) / 3600, 2)) + ' 小时',
+                         '本次开仓时长: ' + str(round((time.time() - self.user.last_open_time) / 3600, 2)) + ' 小时',
                          '本单盈亏: ' + str(message['o']['rp']) + ' U',
                          '平仓时间: ' + getHumanReadTime(),
                          '模式: ' + '止盈止损'])
                     self.user.position = None
-                    self.user.last_time = time.time()
+                    self.user.last_close_time = time.time()
                     self.user.last_balance = self.user.getBalance()
                     self.user.notifier.notify(msg)
                 except Exception as e:

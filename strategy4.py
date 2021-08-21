@@ -145,11 +145,11 @@ class Strategy4(object):
 
     def clearPosition(self, p):
         for user in self.users:
-            if user.position == p and round((time.time() - user.last_time) / 15 * 60, 2) > 1:
+            if user.position == p and round((time.time() - user.last_open_time) / 15 * 60, 2) > 1:
                 user.api.deleteAllOrder(globalVar['symbol'])
                 user.api.deleteAllPosition(globalVar['symbol'])
                 user.position = None
-                user.last_time = time.time()
+                user.last_close_time = time.time()
                 user.balance = user.getBalance()
                 profit = user.balance - user.last_balance
                 user.last_balance = user.balance
@@ -162,7 +162,7 @@ class Strategy4(object):
                      '亏损次数: ' + str(user.loss_count) + ' 次',
                      '总运行时长: ' + str(round((time.time() - globalVar['init_time']) / 3600, 2)) + ' 小时',
                      '总盈亏: ' + str(user.balance - user.init_balance) + ' U',
-                     '本次开仓时长: ' + str(round((time.time() - user.last_time) / 3600, 2)) + ' 小时',
+                     '本次开仓时长: ' + str(round((time.time() - user.last_open_time) / 3600, 2)) + ' 小时',
                      '本单盈亏: ' + str(profit) + ' U',
                      '平仓时间: ' + getHumanReadTime(),
                      '模式: ' + '一键平仓'])
