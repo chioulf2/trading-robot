@@ -63,7 +63,6 @@ class BinanceApi(object):
                     long = content['positions'][i]['positionAmt']
                 if content['positions'][i]['positionSide'] == 'SHORT':
                     short = content['positions'][i]['positionAmt']
-        print('资产: ', str(content['positions']), ' U')
         return {'long': float(long), 'short': -float(short)}
 
     def getPrice(self, symbol):
