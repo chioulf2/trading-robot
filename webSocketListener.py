@@ -71,6 +71,8 @@ class WebSocketListener(object):
                     self.user.notifier.notify(msg)
                 except Exception as e:
                     self.user.notifier.notify(str(e))
+            else:
+                self.user.notifier.notify('部分成交，总成交量:' + message['o']['q'] + ' 累计成交量:' + message['o']['z'])
 
     def on_message(self, ws, message):
         message = json.loads(message)
