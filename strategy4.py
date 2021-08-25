@@ -56,7 +56,7 @@ class Strategy4(object):
     def __init__(self):
         self.users = []
         # 模式: 分为 "trendOver（趋势结束）", "trendUp(趋势上涨)", "trendDown(趋势下跌)", "shockUp(震荡上涨)", "shockDown(震荡下跌)"
-        self.mode = 'trendOver'
+        self.mode = ''
         self.isNeedleMarket = False  # 是否是针市
         self.BBandsK = 2  # 多少倍标准差
         self.klineTime = time.time()
@@ -134,7 +134,7 @@ class Strategy4(object):
         [MB, UP, LB, PB, BW] = getBoll(data, 0, self.BBandsK)
         [preMB, preUP, preLB, prePB, preBW] = getBoll(data, -1, self.BBandsK)
         currentPrice = float(data[-1][4])
-        if (currentPrice > UP or currentPrice < LB) and preBW < BW < 0.03:
+        if (currentPrice > UP or currentPrice < LB) and preBW < BW < 0.03 and BW > 0.01:
             if currentPrice > UP and abs(currentPrice - UP) / UP > 0.005:
                 msg = '趋势开多 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
                 status = 'up'
