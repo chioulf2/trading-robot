@@ -112,7 +112,10 @@ class Strategy4(object):
     def shock(self, data):
         msg = ''
         status = ''
+        stopScope = 0.01
         [MB, UP, LB, PB, BW] = getBoll(data, 0, self.BBandsK)
+        if BW / 2 > stopScope:
+            stopScope = BW / 2
         currentPrice = float(data[-1][4])
         canOpen = (UP - LB) / MB > 0.01
         if LB < currentPrice < UP:
@@ -126,15 +129,12 @@ class Strategy4(object):
                     msg = '震荡开单做空 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(
                         LB)
                 status = 'UP'
-        return {'status': status, 'msg': msg, 'canOpen': canOpen}
+        return {'status': status, 'msg': msg, 'canOpen': canOpen, 'stopScope': stopScope}
 
     def trend(self, data):
         msg = ''
         status = ''
-        stopScope = 0.01
         [MB, UP, LB, PB, BW] = getBoll(data, 0, self.BBandsK)
-        if BW / 2 > stopScope:
-            stopScope = BW / 2
         [preMB, preUP, preLB, prePB, preBW] = getBoll(data, -1, self.BBandsK)
         currentPrice = float(data[-1][4])
         if (currentPrice > UP or currentPrice < LB) and preBW < BW < 0.03 and BW > 0.01:
@@ -144,7 +144,7 @@ class Strategy4(object):
             if currentPrice < LB and abs(currentPrice - LB) / LB > 0.005:
                 msg = '趋势开空 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
                 status = 'down'
-        return {'status': status, 'msg': msg, 'stopScope': stopScope}
+        return {'status': status, 'msg': msg}
 
     def clearPosition(self, p):
         for user in self.users:
