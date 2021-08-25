@@ -131,7 +131,10 @@ class Strategy4(object):
     def trend(self, data):
         msg = ''
         status = ''
+        stopScope = 0.01
         [MB, UP, LB, PB, BW] = getBoll(data, 0, self.BBandsK)
+        if BW / 2 > stopScope:
+            stopScope = BW / 2
         [preMB, preUP, preLB, prePB, preBW] = getBoll(data, -1, self.BBandsK)
         currentPrice = float(data[-1][4])
         if (currentPrice > UP or currentPrice < LB) and preBW < BW < 0.03 and BW > 0.01:
@@ -141,7 +144,7 @@ class Strategy4(object):
             if currentPrice < LB and abs(currentPrice - LB) / LB > 0.005:
                 msg = '趋势开空 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
                 status = 'down'
-        return {'status': status, 'msg': msg}
+        return {'status': status, 'msg': msg, 'stopScope': stopScope}
 
     def clearPosition(self, p):
         for user in self.users:
@@ -231,14 +234,14 @@ class Strategy4(object):
             self.clearPosition('long')
             if s['canOpen']:
                 self.sendMsgWhenNoPosition(s['msg'])
-                self.doShort(0.01, 0.01)
+                self.doShort(s['stopScope'], 0.01)
         elif s['status'] == 'LB':
             # 震荡到上轨附近，平空，开多
             self.mode = 'shockUp'
             self.clearPosition('short')
             if s['canOpen']:
                 self.sendMsgWhenNoPosition(s['msg'])
-                self.doLong(0.01, 0.01)
+                self.doLong(s['stopScope'], 0.01)
 
     def DFA(self, data):
         self.judgeTrend(data)
