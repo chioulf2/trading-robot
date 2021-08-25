@@ -114,7 +114,7 @@ class Strategy4(object):
         status = ''
         [MB, UP, LB, PB, BW] = getBoll(data, 0, self.BBandsK)
         currentPrice = float(data[-1][4])
-        canOpen = (UP - LB) / MB > 0.02
+        canOpen = (UP - LB) / MB > 0.01
         if LB < currentPrice < UP:
             if currentPrice < MB and currentPrice < LB * (1 + 0.002):
                 if canOpen:
