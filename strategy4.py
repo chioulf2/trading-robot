@@ -112,10 +112,8 @@ class Strategy4(object):
     def shock(self, data):
         msg = ''
         status = ''
-        stopScope = 0.01
         [MB, UP, LB, PB, BW] = getBoll(data, 0, self.BBandsK)
-        if BW / 2 > stopScope:
-            stopScope = BW / 2
+        stopScope = BW * 0.7
         currentPrice = float(data[-1][4])
         canOpen = (UP - LB) / MB > 0.01
         if LB < currentPrice < UP:
