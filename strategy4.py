@@ -119,12 +119,12 @@ class Strategy4(object):
         currentPrice = float(data[-1][4])
         canOpen = (UP - LB) / MB > 0.01
         if LB < currentPrice < UP:
-            if currentPrice < MB and currentPrice < LB * (1 + 0.002):
+            if currentPrice < MB and currentPrice < LB * (1 + BW / 10):
                 if canOpen:
                     msg = '震荡开单做多 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(
                         LB)
                 status = 'LB'
-            if currentPrice > MB and currentPrice > UP * (1 - 0.002):
+            if currentPrice > MB and currentPrice > UP * (1 - BW / 10):
                 if canOpen:
                     msg = '震荡开单做空 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(
                         LB)
@@ -204,13 +204,13 @@ class Strategy4(object):
             self.mode = 'trendUp'
             self.clearPosition('short')
             self.sendMsgWhenNoPosition(t['msg'])
-            self.doLong(0.02, 0.01)
+            self.doLong(0.02, 0.008)
         elif t['status'] == 'down':
             # 单边向下行情，平多，开空
             self.mode = 'trendDown'
             self.clearPosition('long')
             self.sendMsgWhenNoPosition(t['msg'])
-            self.doShort(0.02, 0.01)
+            self.doShort(0.02, 0.008)
 
     def judgeTrendOver(self, data):
         tOver = self.trendOver(data)
@@ -234,14 +234,14 @@ class Strategy4(object):
             self.clearPosition('long')
             if s['canOpen']:
                 self.sendMsgWhenNoPosition(s['msg'])
-                self.doShort(s['stopScope'], 0.01)
+                self.doShort(s['stopScope'], 0.008)
         elif s['status'] == 'LB':
             # 震荡到上轨附近，平空，开多
             self.mode = 'shockUp'
             self.clearPosition('short')
             if s['canOpen']:
                 self.sendMsgWhenNoPosition(s['msg'])
-                self.doLong(s['stopScope'], 0.01)
+                self.doLong(s['stopScope'], 0.008)
 
     def DFA(self, data):
         self.judgeTrend(data)

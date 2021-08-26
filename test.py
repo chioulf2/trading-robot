@@ -1,3 +1,3 @@
 import time
 
-print(time.time())
+print(0.02/10)
