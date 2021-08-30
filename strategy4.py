@@ -59,7 +59,7 @@ class Strategy4(object):
         self.mode = 'trendOver'
         self.isNeedleMarket = False  # 是否是针市
         self.BBandsK = 2  # 多少倍标准差
-        self.klineTime = time.time()
+        # self.klineTime = time.time()
         # 获取历史k线数据，接下来的k线数据在webSocket中更新
         self.kline15m = globalVar['defaultUser'].api.getKline(globalVar['symbol'], '15m')
         kline(self, '15m')
@@ -117,12 +117,12 @@ class Strategy4(object):
         currentPrice = float(data[-1][4])
         canOpen = (UP - LB) / MB > 0.01
         if LB < currentPrice < UP:
-            if currentPrice < MB and currentPrice < LB * (1 + (BW / 10 - 0.001)):
+            if currentPrice < MB and currentPrice < LB * (1 + (BW / 10 - 0.0009)):
                 if canOpen:
                     msg = '震荡开单做多 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(
                         LB)
                 status = 'LB'
-            if currentPrice > MB and currentPrice > UP * (1 - (BW / 10 - 0.001)):
+            if currentPrice > MB and currentPrice > UP * (1 - (BW / 10 - 0.0009)):
                 if canOpen:
                     msg = '震荡开单做空 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(
                         LB)
@@ -172,7 +172,7 @@ class Strategy4(object):
     def strategy(self):
         # if (time.time() - self.klineTime) / 60 < 1:
         #     return
-        self.klineTime = time.time()
+        # self.klineTime = time.time()
         data = self.kline15m
         if not self.isNeedleMarket:
             if not isNeedleMarketStart(data):
