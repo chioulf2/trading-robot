@@ -1,6 +1,6 @@
 import time
 from binanceApi import BinanceApi
-from notify import NotifyService
+from private.notify import NotifyService
 
 
 class User(object):

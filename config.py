@@ -1,12 +1,12 @@
 import json
 import time
-from dbConnect import getDBConn
+from private.dbConnect import getDBConn
 from user import User
 
 
 def config():
     # 交易所API配置
-    file = open('./config.json', 'r')
+    file = open('private/config.json', 'r')
     c = json.loads(file.read())
     secret_key = c['secret_key']
     headers = c['headers']
