@@ -90,3 +90,17 @@ def isBigNeedle(dataItem):
     if (highest - max) / max > 0.012 or (min - lowest) / min > 0.012:
         return True
     return False
+
+
+def updateKline(kline, message):
+    newItem = [message['k']['t'], message['k']['o'], message['k']['h'], message['k']['l'],
+               message['k']['c'],
+               message['k']['v'], message['k']['T'], message['k']['q'], message['k']['n'],
+               message['k']['V'],
+               message['k']['Q'], message['k']['B']]
+    if kline[-1][0] != message['k']['t']:
+        kline.append(newItem)
+        del kline[0]
+    else:
+        kline[-1] = newItem
+    return kline

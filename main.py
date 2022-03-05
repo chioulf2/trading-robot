@@ -17,13 +17,13 @@ except ImportError:
 
 def main():
     strategy4 = Strategy4()
-    strategy5 = Strategy5()
+    # strategy5 = Strategy5()
     webSocketPool = []
     for u in globalVar['userConfig']:
-        if u[6] == '4':
+        if u['strategy'] == '4':
             addUser(strategy4, webSocketPool, u)
-        elif u[6] == '5':
-            addUser(strategy5, webSocketPool, u)
+        # elif u['strategy'] == '5':
+            # addUser(strategy5, webSocketPool, u)
     # MessageQueue(strategy)
     while True:
         time.sleep(3600)

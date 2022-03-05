@@ -9,9 +9,9 @@ def clearPosition(user):
 
 
 def addUser(strategy, webSocketPool, u):
-    if u[-1] == 'true':
+    if u['active'] == 'false':
         return
-    user = User(*u[:6])
+    user = User(u, globalVar['proxies'])
     strategy.add(user)
     listener = WebSocketListener(user, None)
     listener.listenOnThread()

@@ -1,27 +1,13 @@
 import websocket
 import time
 import json
-from util import getHumanReadTime
+from util import getHumanReadTime, updateKline
 from config import globalVar
 
 try:
     import thread
 except ImportError:
     import _thread as thread
-
-
-def updateKline(kline, message):
-    newItem = [message['k']['t'], message['k']['o'], message['k']['h'], message['k']['l'],
-               message['k']['c'],
-               message['k']['v'], message['k']['T'], message['k']['q'], message['k']['n'],
-               message['k']['V'],
-               message['k']['Q'], message['k']['B']]
-    if kline[-1][0] != message['k']['t']:
-        kline.append(newItem)
-        del kline[0]
-    else:
-        kline[-1] = newItem
-    return kline
 
 
 class WebSocketListener(object):
@@ -91,16 +77,9 @@ class WebSocketListener(object):
                 ws.close()
                 self.listenStreams()
                 return
-            if message['k']['i'] == '15m':
-                self.strategy.kline15m = updateKline(self.strategy.kline15m, message)
-                if self.strategy is not None:
-                    self.strategy.strategy()
-            elif message['k']['i'] == '30m':
-                self.strategy.kline30m = updateKline(self.strategy.kline30m, message)
-                if self.strategy is not None:
-                    self.strategy.strategy()
-            elif message['k']['i'] == '1h':
-                self.strategy.kline1h = updateKline(self.strategy.kline1h, message)
+            self.strategy.kline = updateKline(self.strategy.kline, message)
+            if self.strategy is not None:
+                self.strategy.strategy()
 
     def on_error(self, ws, error):
         print(ws)

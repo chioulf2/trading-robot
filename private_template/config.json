@@ -1,0 +1,9 @@
+{
+  "host": "fapi.binance.com",
+  "secret_key": "xxx",
+  "headers": {
+    "X-MBX-APIKEY": "xxx"
+  },
+  "wxPushUid": "xxx",
+  "TgPushUid": "xxx"
+}

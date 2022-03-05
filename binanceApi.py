@@ -7,16 +7,13 @@ from util import getTime
 
 class BinanceApi(object):
 
-    def __init__(self, api_key, secret_key):
+    def __init__(self, api_key, secret_key, proxies):
         self.secret_key = secret_key
         self.host = "fapi.binance.com"
         self.headers = {
             "X-MBX-APIKEY": api_key
         }
-        self.proxies = {
-          "http": "http://127.0.0.1:1087",
-          "https": "http://127.0.0.1:1087",
-        }
+        self.proxies = proxies
 
     def getSignature(self, msg):
         return hmac.new(bytes(self.secret_key, 'utf-8'), msg=bytes(msg, 'utf-8'), digestmod=hashlib.sha256).hexdigest()
@@ -24,17 +21,17 @@ class BinanceApi(object):
     def getRequest(self, method, msg, signature):
         return requests.get(
             'https://' + self.host + method + '?' + msg + '&signature=' + signature,
-            headers=self.headers)
+            headers=self.headers, proxies=self.proxies)
 
     def postRequest(self, method, msg, signature):
         return requests.post(
             'https://' + self.host + method + '?' + msg + '&signature=' + signature,
-            headers=self.headers)
+            headers=self.headers, proxies=self.proxies)
 
     def deleteRequest(self, method, msg, signature):
         return requests.delete(
             'https://' + self.host + method + '?' + msg + '&signature=' + signature,
-            headers=self.headers)
+            headers=self.headers, proxies=self.proxies)
 
     def getBalance(self):
         method = '/fapi/v2/balance'
@@ -188,10 +185,11 @@ class BinanceApi(object):
         print('获取listenKey')
         return content['listenKey']
 
-    def getKline(self, symbol, interval):
+    def getKline(self, symbol, interval, limit=200):
         '''
         :param symbol:
         :param interval:
+        :param limit:
         :return: [
                   [
                     1499040000000,      // 开盘时间
@@ -212,7 +210,7 @@ class BinanceApi(object):
         method = '/fapi/v1/klines'
         timestamp = str(getTime())
         msg = '&'.join(
-            ['symbol=' + symbol, 'interval=' + interval, 'limit=200', 'timestamp='+timestamp])
+            ['symbol=' + symbol, 'interval=' + interval, 'limit=' + str(limit), 'timestamp=' + timestamp])
         signature = self.getSignature(msg)
         response = self.getRequest(method, msg, signature)
         content = json.loads(response.content)

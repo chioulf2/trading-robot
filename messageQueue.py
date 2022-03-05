@@ -1,3 +1,7 @@
+"""
+这个是用于新用户注册
+"""
+
 import pika
 import json
 from config import globalVar
