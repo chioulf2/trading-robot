@@ -56,6 +56,9 @@ params = {
     }
 }
 
+# 止损幅度
+stopScope = 0.01
+
 
 def isNeedleMarketStart(data):
     # 检测一天内的插针的情况 96 = 24*4
@@ -305,7 +308,7 @@ class Strategy4(object):
                     'trendUp', 'shockUp']):
             self.clearPosition('short')
             if self.mode15m.canOpen:
-                self.doLong(self.mode15m.scope, 0.008)
+                self.doLong(self.mode15m.scope, stopScope)
                 self.sendMsg(self.mode15m.msg)
         elif (self.mode15m.mode == 'trendDown' or self.mode15m.mode == 'shockDown') and (
                 self.mode1h.mode in ['trendDown', 'shockDown'] or self.mode4h.mode in ['trendDown',
@@ -313,5 +316,5 @@ class Strategy4(object):
                     'trendDown', 'shockDown']):
             self.clearPosition('long')
             if self.mode15m.canOpen:
-                self.doShort(self.mode15m.scope, 0.008)
+                self.doShort(self.mode15m.scope, stopScope)
                 self.sendMsg(self.mode15m.msg)
