@@ -11,14 +11,6 @@ def config():
     # 交易信息配置
     symbol = 'ETHUSDT'  # 交易对
     init_time = time.time()  # 开机时间
-    # 访问币安api是否需要设置代理
-    proxy = True
-    proxies = {}
-    if proxy:
-        proxies = {
-            "http": "http://127.0.0.1:1087",
-            "https": "http://127.0.0.1:1087",
-        }
 
     # 交易所API配置
     file = open('private/config.json', 'r')
@@ -28,6 +20,7 @@ def config():
     api_key = headers['X-MBX-APIKEY']
     wxPushUid = c['wxPushUid']
     TgPushUid = c['TgPushUid']
+    proxies = c['proxies']
     defaultUser = User({
         'api-key': api_key,
         'secret-key': secret_key,
