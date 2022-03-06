@@ -13,6 +13,8 @@ class NotifyService(object):
         self.TgPushUid = TgPushUid
 
     def sendMessageToWX(self, message):
+        if self.WxPushUid == '' or self.WxPushUid is None:
+            return
         data = {
             "appToken": "xxx",
             "content": message,
@@ -34,4 +36,5 @@ class NotifyService(object):
         self.sendMessageToTG(message)
 
     def notify(self, message):
+        print(message)
         self.sendMessage('版本更新时间: ' + '2021.07.29 20:00' + '\n时间: ' + getHumanReadTime() + '\n' + message)
