@@ -7,8 +7,8 @@ def getTime():
     return str(int(time.time() * 1000))
 
 
-def getHumanReadTime():
-    return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+def getHumanReadTime(t=None):
+    return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(t))
 
 
 def getMA(data, N, j=0):

@@ -1,2 +1,9 @@
-a = [1,2,3,4,5,6]
-print(*a[:6])
+import time
+
+
+def getHumanReadTime(t=None):
+    print(t)
+    return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(t))
+
+
+print(getHumanReadTime())

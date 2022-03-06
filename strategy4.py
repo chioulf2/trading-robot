@@ -146,8 +146,7 @@ class Mode(object):
         if sideEffect:
             if self.interval == '15m' and time.time() - self.updateTime > 5:
                 self.updateTime = time.time()
-                if time.time() - self.changeModeTime < 10:
-                    self.manager.strategy()
+                self.manager.strategy()
 
     def DFA(self, data):
         self.judgeTrend(data)
@@ -199,7 +198,7 @@ class Mode(object):
             else:
                 self.msg = '上涨趋势结束 当前价格: ' + str(currentPrice) + ' MA20: ' + str(MA20)
             status = True
-            self.changeModeTime = data[-1][0]/1000
+            self.changeModeTime = data[-1][0] / 1000
         return {'status': status}
 
     def shock(self, data):
@@ -215,12 +214,14 @@ class Mode(object):
                         MB) + ' 下轨: ' + str(
                         LB)
                 status = 'LB'
+                self.changeModeTime = data[-1][0] / 1000
             if currentPrice > MB and currentPrice > UP * (1 - (BW / 10 - 0.0009)):
                 if self.canOpen:
                     self.msg = '震荡开单做空 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(
                         MB) + ' 下轨: ' + str(
                         LB)
                 status = 'UP'
+                self.changeModeTime = data[-1][0] / 1000
         return {'status': status}
 
     def trend(self, data):
@@ -233,10 +234,12 @@ class Mode(object):
                 self.scope = profitScope
                 self.msg = '趋势开多 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
                 status = 'up'
+                self.changeModeTime = data[-1][0] / 1000
             if currentPrice < LB and abs(currentPrice - LB) / LB > params[self.interval]['break']:
                 self.scope = profitScope
                 self.msg = '趋势开空 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
                 status = 'down'
+                self.changeModeTime = data[-1][0] / 1000
         return {'status': status}
 
 
@@ -315,6 +318,10 @@ class Strategy4(object):
         print('self.mode15m.mode: ', self.mode15m.mode, ', self.mode1h.mode: ', self.mode1h.mode,
               ', self.mode4h.mode: ',
               self.mode4h.mode, ', self.mode1d.mode: ', self.mode1d.mode, '\n')
+        # 开仓时间和模式转换时间必须在同一根k线，保证时效性
+        self.sendMsg('模式改变时间：' + getHumanReadTime(self.mode15m.changeModeTime))
+        if time.time() - self.mode15m.changeModeTime > 15 * 60:
+            return
         if (self.mode15m.mode == 'trendUp' or self.mode15m.mode == 'shockUp') and (
                 self.mode1h.mode in ['trendUp', 'shockUp'] or self.mode4h.mode in ['trendUp',
                                                                                    'shockUp'] or self.mode1d.mode in [
