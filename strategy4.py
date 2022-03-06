@@ -312,6 +312,10 @@ class Strategy4(object):
                 self.mode1h.mode in ['trendUp', 'shockUp'] or self.mode4h.mode in ['trendUp',
                                                                                    'shockUp'] or self.mode1d.mode in [
                     'trendUp', 'shockUp']):
+            if self.mode1h.mode in ['trendUp', 'shockUp'] and self.mode4h.mode in ['trendUp',
+                                                                                   'shockUp'] and self.mode1d.mode in [
+                'trendUp', 'shockUp'] and self.mode15m.mode == 'trendUp':
+                self.mode15m.scope = 0.05
             self.clearPosition('short')
             if self.mode15m.canOpen:
                 self.doLong(self.mode15m.scope, stopScope)
@@ -320,6 +324,10 @@ class Strategy4(object):
                 self.mode1h.mode in ['trendDown', 'shockDown'] or self.mode4h.mode in ['trendDown',
                                                                                        'shockDown'] or self.mode1d.mode in [
                     'trendDown', 'shockDown']):
+            if self.mode1h.mode in ['trendDown', 'shockDown'] and self.mode4h.mode in ['trendDown',
+                                                                                       'shockDown'] and self.mode1d.mode in [
+                'trendDown', 'shockDown'] and self.mode15m.mode == 'trendDown':
+                self.mode15m.scope = 0.05
             self.clearPosition('long')
             if self.mode15m.canOpen:
                 self.doShort(self.mode15m.scope, stopScope)
