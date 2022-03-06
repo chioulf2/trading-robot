@@ -23,6 +23,7 @@
 
 改动：
 之前没有对历史模式进行判断，导致self.mode一开始默认为trendOver，现在增加了对历史模式进行判断
+开仓是有时效性的，只有状态转变的时候才可以开仓，所以需要记录最近一次状态改变的时间，如果当前时间跟上次状态改变的时间很接近则可以开仓
 """
 
 import time
@@ -101,6 +102,7 @@ class Mode(object):
         self.interval = interval
         # 模式: 分为 "trendOver（趋势结束）", "trendUp(趋势上涨)", "trendDown(趋势下跌)", "shockUp(震荡上涨)", "shockDown(震荡下跌)"
         self.mode = 'trendOver'
+        self.changeModeTime = 0
         self.isNeedleMarket = False  # 是否是针市
         self.BBandsK = 2  # 多少倍标准差
         self.prepare()
@@ -143,8 +145,9 @@ class Mode(object):
                 self.DFA(data)
         if sideEffect:
             if self.interval == '15m' and time.time() - self.updateTime > 5:
-                self.manager.strategy()
                 self.updateTime = time.time()
+                if time.time() - self.changeModeTime < 10:
+                    self.manager.strategy()
 
     def DFA(self, data):
         self.judgeTrend(data)
@@ -158,6 +161,7 @@ class Mode(object):
         if t['status'] == 'up':
             # 单边向上行情，平空，开多
             self.mode = 'trendUp'
+
         elif t['status'] == 'down':
             # 单边向下行情，平多，开空
             self.mode = 'trendDown'
@@ -167,6 +171,7 @@ class Mode(object):
         if tOver['status'] and self.mode == 'trendUp':
             # 单边向上行情结束，平多
             self.mode = 'trendOver'
+
         elif tOver['status'] and self.mode == 'trendDown':
             # 单边向下行情结束，平空
             self.mode = 'trendOver'
@@ -177,6 +182,7 @@ class Mode(object):
         if s['status'] == 'UP':
             # 震荡到上轨附近，平多，开空
             self.mode = 'shockDown'
+
         elif s['status'] == 'LB':
             # 震荡到上轨附近，平空，开多
             self.mode = 'shockUp'
@@ -193,6 +199,7 @@ class Mode(object):
             else:
                 self.msg = '上涨趋势结束 当前价格: ' + str(currentPrice) + ' MA20: ' + str(MA20)
             status = True
+            self.changeModeTime = data[-1][0]/1000
         return {'status': status}
 
     def shock(self, data):
