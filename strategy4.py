@@ -160,7 +160,6 @@ class Mode(object):
         if t['status'] == 'up':
             # 单边向上行情，平空，开多
             self.mode = 'trendUp'
-
         elif t['status'] == 'down':
             # 单边向下行情，平多，开空
             self.mode = 'trendDown'
@@ -170,7 +169,6 @@ class Mode(object):
         if tOver['status'] and self.mode == 'trendUp':
             # 单边向上行情结束，平多
             self.mode = 'trendOver'
-
         elif tOver['status'] and self.mode == 'trendDown':
             # 单边向下行情结束，平空
             self.mode = 'trendOver'
@@ -181,7 +179,6 @@ class Mode(object):
         if s['status'] == 'UP':
             # 震荡到上轨附近，平多，开空
             self.mode = 'shockDown'
-
         elif s['status'] == 'LB':
             # 震荡到上轨附近，平空，开多
             self.mode = 'shockUp'
