@@ -36,7 +36,6 @@ try:
 except ImportError:
     import _thread as thread
 
-
 params = {
     '15m': {
         'BW': 0.03,
@@ -94,6 +93,7 @@ def isNeedleMarketEnd(data):
 class Mode(object):
 
     def __init__(self, interval, manager):
+        self.updateTime = time.time()
         self.manager = manager
         self.scope = profitScope
         self.canOpen = True
@@ -142,7 +142,9 @@ class Mode(object):
                 # 继续针市
                 self.DFA(data)
         if sideEffect:
-            self.manager.strategy()
+            if self.interval == '15m' and time.time() - self.updateTime > 5:
+                self.manager.strategy()
+                self.updateTime = time.time()
 
     def DFA(self, data):
         self.judgeTrend(data)
@@ -303,7 +305,8 @@ class Strategy4(object):
     def strategy(self):
         if not self.mode15m or not self.mode1d or not self.mode4h or not self.mode1h:
             return
-        print('self.mode15m.mode: ', self.mode15m.mode, ', self.mode1h.mode: ', self.mode1h.mode, ', self.mode4h.mode: ',
+        print('self.mode15m.mode: ', self.mode15m.mode, ', self.mode1h.mode: ', self.mode1h.mode,
+              ', self.mode4h.mode: ',
               self.mode4h.mode, ', self.mode1d.mode: ', self.mode1d.mode, '\n')
         if (self.mode15m.mode == 'trendUp' or self.mode15m.mode == 'shockUp') and (
                 self.mode1h.mode in ['trendUp', 'shockUp'] or self.mode4h.mode in ['trendUp',
