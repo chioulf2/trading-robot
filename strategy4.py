@@ -102,7 +102,8 @@ class Mode(object):
         self.interval = interval
         # 模式: 分为 "trendOver（趋势结束）", "trendUp(趋势上涨)", "trendDown(趋势下跌)", "shockUp(震荡上涨)", "shockDown(震荡下跌)"
         self.mode = 'trendOver'
-        self.changeModeTime = 0
+        self.changeModeTime = 0     # 模式改变的时间
+        self.isOpen = False     # 该模式下是否开过单
         self.isNeedleMarket = False  # 是否是针市
         self.BBandsK = 2  # 多少倍标准差
         self.prepare()
@@ -319,9 +320,10 @@ class Strategy4(object):
               ', self.mode4h.mode: ',
               self.mode4h.mode, ', self.mode1d.mode: ', self.mode1d.mode, '\n')
         # 开仓时间和模式转换时间必须在同一根k线，保证时效性
-        self.sendMsg('模式改变时间：' + getHumanReadTime(self.mode15m.changeModeTime))
-        if time.time() - self.mode15m.changeModeTime > 15 * 60:
+        print('模式改变时间：' + getHumanReadTime(self.mode15m.changeModeTime))
+        if time.time() - self.mode15m.changeModeTime > 15 * 60 and not self.mode15m.isOpen:
             return
+        self.mode15m.isOpen = True
         if (self.mode15m.mode == 'trendUp' or self.mode15m.mode == 'shockUp') and (
                 self.mode1h.mode in ['trendUp', 'shockUp'] or self.mode4h.mode in ['trendUp',
                                                                                    'shockUp'] or self.mode1d.mode in [
