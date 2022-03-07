@@ -319,6 +319,7 @@ class Strategy4(object):
         print('模式改变时间：' + getHumanReadTime(self.mode15m.changeModeTime))
         if time.time() - self.mode15m.changeModeTime > 15 * 60:
             return
+        self.sendMsg('模式改变时间：' + getHumanReadTime(self.mode15m.changeModeTime))
         # 设置时间让下一单无法开出
         self.mode15m.changeModeTime = time.time() - 15 * 60
         if (self.mode15m.mode == 'trendUp' or self.mode15m.mode == 'shockUp') and (
