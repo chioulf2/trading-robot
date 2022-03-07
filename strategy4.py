@@ -102,6 +102,7 @@ class Mode(object):
         self.interval = interval
         # 模式: 分为 "trendOver（趋势结束）", "trendUp(趋势上涨)", "trendDown(趋势下跌)", "shockUp(震荡上涨)", "shockDown(震荡下跌)"
         self.mode = 'trendOver'
+        self.oldMode = self.mode
         self.changeModeTime = 0  # 模式改变的时间
         self.isNeedleMarket = False  # 是否是针市
         self.BBandsK = 2  # 多少倍标准差
@@ -195,7 +196,8 @@ class Mode(object):
             else:
                 self.msg = '上涨趋势结束 当前价格: ' + str(currentPrice) + ' MA20: ' + str(MA20)
             status = True
-            self.changeModeTime = data[-1][0] / 1000
+            if self.oldMode != self.mode:
+                self.changeModeTime = data[-1][0] / 1000
         return {'status': status}
 
     def shock(self, data):
@@ -211,14 +213,16 @@ class Mode(object):
                         MB) + ' 下轨: ' + str(
                         LB)
                 status = 'LB'
-                self.changeModeTime = data[-1][0] / 1000
+                if self.oldMode != self.mode:
+                    self.changeModeTime = data[-1][0] / 1000
             if currentPrice > MB and currentPrice > UP * (1 - (BW / 10 - 0.0009)):
                 if self.canOpen:
                     self.msg = '震荡开单做空 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(
                         MB) + ' 下轨: ' + str(
                         LB)
                 status = 'UP'
-                self.changeModeTime = data[-1][0] / 1000
+                if self.oldMode != self.mode:
+                    self.changeModeTime = data[-1][0] / 1000
         return {'status': status}
 
     def trend(self, data):
@@ -231,12 +235,14 @@ class Mode(object):
                 self.scope = profitScope
                 self.msg = '趋势开多 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
                 status = 'up'
-                self.changeModeTime = data[-1][0] / 1000
+                if self.oldMode != self.mode:
+                    self.changeModeTime = data[-1][0] / 1000
             if currentPrice < LB and abs(currentPrice - LB) / LB > params[self.interval]['break']:
                 self.scope = profitScope
                 self.msg = '趋势开空 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
                 status = 'down'
-                self.changeModeTime = data[-1][0] / 1000
+                if self.oldMode != self.mode:
+                    self.changeModeTime = data[-1][0] / 1000
         return {'status': status}
 
 
