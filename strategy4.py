@@ -99,6 +99,7 @@ class Mode(object):
         self.scope = profitScope
         self.canOpen = True
         self.msg = ''
+        self.oldMsg = ''
         self.interval = interval
         # 模式: 分为 "trendOver（趋势结束）", "trendUp(趋势上涨)", "trendDown(趋势下跌)", "shockUp(震荡上涨)", "shockDown(震荡下跌)"
         self.mode = 'trendOver'
@@ -161,18 +162,34 @@ class Mode(object):
         if t['status'] == 'up':
             # 单边向上行情，平空，开多
             self.mode = 'trendUp'
+            if self.oldMode != self.mode:
+                self.oldMode = self.mode
+                self.changeModeTime = data[-1][0] / 1000
+                self.oldMsg = self.msg
         elif t['status'] == 'down':
             # 单边向下行情，平多，开空
             self.mode = 'trendDown'
+            if self.oldMode != self.mode:
+                self.oldMode = self.mode
+                self.changeModeTime = data[-1][0] / 1000
+                self.oldMsg = self.msg
 
     def judgeTrendOver(self, data):
         tOver = self.trendOver(data)
         if tOver['status'] and self.mode == 'trendUp':
             # 单边向上行情结束，平多
             self.mode = 'trendOver'
+            if self.oldMode != self.mode:
+                self.oldMode = self.mode
+                self.changeModeTime = data[-1][0] / 1000
+                self.oldMsg = self.msg
         elif tOver['status'] and self.mode == 'trendDown':
             # 单边向下行情结束，平空
             self.mode = 'trendOver'
+            if self.oldMode != self.mode:
+                self.oldMode = self.mode
+                self.changeModeTime = data[-1][0] / 1000
+                self.oldMsg = self.msg
 
     def judgeShock(self, data):
         # 震荡行情
@@ -180,9 +197,17 @@ class Mode(object):
         if s['status'] == 'UP':
             # 震荡到上轨附近，平多，开空
             self.mode = 'shockDown'
+            if self.oldMode != self.mode:
+                self.oldMode = self.mode
+                self.changeModeTime = data[-1][0] / 1000
+                self.oldMsg = self.msg
         elif s['status'] == 'LB':
             # 震荡到上轨附近，平空，开多
             self.mode = 'shockUp'
+            if self.oldMode != self.mode:
+                self.oldMode = self.mode
+                self.changeModeTime = data[-1][0] / 1000
+                self.oldMsg = self.msg
 
     def trendOver(self, data):
         status = False
@@ -196,9 +221,6 @@ class Mode(object):
             else:
                 self.msg = '上涨趋势结束 当前价格: ' + str(currentPrice) + ' MA20: ' + str(MA20)
             status = True
-            if self.oldMode != self.mode:
-                self.oldMode = self.mode
-                self.changeModeTime = data[-1][0] / 1000
         return {'status': status}
 
     def shock(self, data):
@@ -214,18 +236,12 @@ class Mode(object):
                         MB) + ' 下轨: ' + str(
                         LB)
                 status = 'LB'
-                if self.oldMode != self.mode:
-                    self.oldMode = self.mode
-                    self.changeModeTime = data[-1][0] / 1000
             if currentPrice > MB and currentPrice > UP * (1 - (BW / 10 - 0.0009)):
                 if self.canOpen:
                     self.msg = '震荡开单做空 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(
                         MB) + ' 下轨: ' + str(
                         LB)
                 status = 'UP'
-                if self.oldMode != self.mode:
-                    self.oldMode = self.mode
-                    self.changeModeTime = data[-1][0] / 1000
         return {'status': status}
 
     def trend(self, data):
@@ -238,16 +254,10 @@ class Mode(object):
                 self.scope = profitScope
                 self.msg = '趋势开多 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
                 status = 'up'
-                if self.oldMode != self.mode:
-                    self.oldMode = self.mode
-                    self.changeModeTime = data[-1][0] / 1000
             if currentPrice < LB and abs(currentPrice - LB) / LB > params[self.interval]['break']:
                 self.scope = profitScope
                 self.msg = '趋势开空 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
                 status = 'down'
-                if self.oldMode != self.mode:
-                    self.oldMode = self.mode
-                    self.changeModeTime = data[-1][0] / 1000
         return {'status': status}
 
 
@@ -329,7 +339,7 @@ class Strategy4(object):
               self.mode4h.mode, ', self.mode1d.mode: ', self.mode1d.mode, '\n')
         # 开仓时间和模式转换时间必须在同一根k线，保证时效性
         print('模式改变时间：' + getHumanReadTime(self.mode15m.changeModeTime), '当前时间: ' + getHumanReadTime())
-        print('模式改变详情: ' + self.mode15m.msg)
+        print('模式改变详情: ' + self.mode15m.oldMsg)
         if self.oldChangeModeTime == self.mode15m.changeModeTime:
             return
         if time.time() - self.mode15m.changeModeTime > 15 * 60:
