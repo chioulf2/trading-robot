@@ -197,6 +197,7 @@ class Mode(object):
                 self.msg = '上涨趋势结束 当前价格: ' + str(currentPrice) + ' MA20: ' + str(MA20)
             status = True
             if self.oldMode != self.mode:
+                self.oldMode = self.mode
                 self.changeModeTime = data[-1][0] / 1000
         return {'status': status}
 
@@ -214,6 +215,7 @@ class Mode(object):
                         LB)
                 status = 'LB'
                 if self.oldMode != self.mode:
+                    self.oldMode = self.mode
                     self.changeModeTime = data[-1][0] / 1000
             if currentPrice > MB and currentPrice > UP * (1 - (BW / 10 - 0.0009)):
                 if self.canOpen:
@@ -222,6 +224,7 @@ class Mode(object):
                         LB)
                 status = 'UP'
                 if self.oldMode != self.mode:
+                    self.oldMode = self.mode
                     self.changeModeTime = data[-1][0] / 1000
         return {'status': status}
 
@@ -236,12 +239,14 @@ class Mode(object):
                 self.msg = '趋势开多 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
                 status = 'up'
                 if self.oldMode != self.mode:
+                    self.oldMode = self.mode
                     self.changeModeTime = data[-1][0] / 1000
             if currentPrice < LB and abs(currentPrice - LB) / LB > params[self.interval]['break']:
                 self.scope = profitScope
                 self.msg = '趋势开空 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
                 status = 'down'
                 if self.oldMode != self.mode:
+                    self.oldMode = self.mode
                     self.changeModeTime = data[-1][0] / 1000
         return {'status': status}
 
@@ -324,6 +329,7 @@ class Strategy4(object):
               self.mode4h.mode, ', self.mode1d.mode: ', self.mode1d.mode, '\n')
         # 开仓时间和模式转换时间必须在同一根k线，保证时效性
         print('模式改变时间：' + getHumanReadTime(self.mode15m.changeModeTime), '当前时间: ' + getHumanReadTime())
+        print('模式改变详情: ' + self.mode15m.msg)
         if self.oldChangeModeTime == self.mode15m.changeModeTime:
             return
         if time.time() - self.mode15m.changeModeTime > 15 * 60:
