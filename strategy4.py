@@ -317,7 +317,7 @@ class Strategy4(object):
               ', self.mode4h.mode: ',
               self.mode4h.mode, ', self.mode1d.mode: ', self.mode1d.mode, '\n')
         # 开仓时间和模式转换时间必须在同一根k线，保证时效性
-        print('模式改变时间：' + getHumanReadTime(self.mode15m.changeModeTime))
+        print('模式改变时间：' + getHumanReadTime(self.mode15m.changeModeTime), '当前时间: ' + getHumanReadTime())
         if self.oldChangeModeTime == self.mode15m.changeModeTime:
             return
         if time.time() - self.mode15m.changeModeTime > 15 * 60:
