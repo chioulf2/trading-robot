@@ -332,6 +332,32 @@ class Strategy4(object):
                      '模式: ' + '一键平仓'])
                 user.notifier.notify(msg)
 
+    def upAndDownCount(self):
+        up = 0
+        down = 0
+        if self.mode1h.mode in ['trendUp', 'shockUp']:
+            up = up + 1
+        elif self.mode1h.mode in ['trendDown', 'shockDown']:
+            down = down + 1
+        if self.mode4h.mode in ['trendUp', 'shockUp']:
+            up = up + 1
+        elif self.mode4h.mode in ['trendDown', 'shockDown']:
+            down = down + 1
+        if self.mode1d.mode in ['trendUp', 'shockUp']:
+            up = up + 1
+        elif self.mode1d.mode in ['trendDown', 'shockDown']:
+            down = down + 1
+        return {'up': up, 'down': down}
+
+    def setScope(self):
+        res = self.upAndDownCount()
+        if res['up'] == 3 or res['down'] == 3:
+            self.mode15m.scope = 0.05
+        elif res['up'] == 2 or res['down'] == 2:
+            self.mode15m.scope = 0.02
+        elif res['up'] == 1 or res['down'] == 1:
+            self.mode15m.scope = 0.01
+
     def strategy(self):
         if not self.mode15m or not self.mode1d or not self.mode4h or not self.mode1h:
             return
@@ -341,6 +367,7 @@ class Strategy4(object):
         # 开仓时间和模式转换时间必须在同一根k线，保证时效性
         print('模式改变时间：' + getHumanReadTime(self.mode15m.changeModeTime), '当前时间: ' + getHumanReadTime())
         print('模式改变详情: ' + self.mode15m.oldMsg)
+
         if time.time() - self.mode15m.changeModeTime > 15 * 60:
             return
         if self.oldChangeModeTime == self.mode15m.changeModeTime and self.oldMode == self.mode15m.mode:
@@ -349,14 +376,11 @@ class Strategy4(object):
         self.sendMsg('模式改变时间：' + getHumanReadTime(self.mode15m.changeModeTime) + '\n模式改变详情: ' + self.mode15m.oldMsg)
         # 设置时间让下一单无法开出
         self.oldChangeModeTime = self.mode15m.changeModeTime
+        self.setScope()
         if (self.mode15m.mode == 'trendUp' or self.mode15m.mode == 'shockUp') and (
                 self.mode1h.mode in ['trendUp', 'shockUp'] or self.mode4h.mode in ['trendUp',
                                                                                    'shockUp'] or self.mode1d.mode in [
                     'trendUp', 'shockUp']):
-            if self.mode1h.mode in ['trendUp', 'shockUp'] and self.mode4h.mode in ['trendUp',
-                                                                                   'shockUp'] and self.mode1d.mode in [
-                'trendUp', 'shockUp'] and self.mode15m.mode == 'trendUp':
-                self.mode15m.scope = 0.05
             self.clearPosition('short')
             if self.mode15m.canOpen:
                 self.doLong(self.mode15m.scope, stopScope)
@@ -365,10 +389,6 @@ class Strategy4(object):
                 self.mode1h.mode in ['trendDown', 'shockDown'] or self.mode4h.mode in ['trendDown',
                                                                                        'shockDown'] or self.mode1d.mode in [
                     'trendDown', 'shockDown']):
-            if self.mode1h.mode in ['trendDown', 'shockDown'] and self.mode4h.mode in ['trendDown',
-                                                                                       'shockDown'] and self.mode1d.mode in [
-                'trendDown', 'shockDown'] and self.mode15m.mode == 'trendDown':
-                self.mode15m.scope = 0.05
             self.clearPosition('long')
             if self.mode15m.canOpen:
                 self.doShort(self.mode15m.scope, stopScope)
