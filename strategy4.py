@@ -5,9 +5,9 @@
 震荡行情：趋势行情结束后就会进入震荡行情，震荡行情在上下轨内0.2%开仓平仓，或者盈利1%平仓。开口小于2%时不开仓，但可以平仓。
 
 优化：
-1. 采样频率设置为：1分钟一次
+1. 采样频率设置为：5秒一次
 2. 针市中布林线标准差设置为3
-3. 采用4个k线，以15分钟线为基础，如果1h,4h,1d有一个跟15分钟线趋势相同，则可以开单，否则不可以
+3. 采用4个k线，以15分钟线为基础，如果1h,4h,1d有一个跟15分钟线趋势相同，则可以开单，否则不可以，且根据模式匹配的数量决定止盈幅度
 
 15分钟参数:
 趋势行情：开口系数小于3%，价格突破布林线上下轨0.5%
@@ -350,13 +350,14 @@ class Strategy4(object):
         return {'up': up, 'down': down}
 
     def setScope(self):
-        res = self.upAndDownCount()
-        if res['up'] == 3 or res['down'] == 3:
-            self.mode15m.scope = 0.05
-        elif res['up'] == 2 or res['down'] == 2:
-            self.mode15m.scope = 0.02
-        elif res['up'] == 1 or res['down'] == 1:
-            self.mode15m.scope = 0.01
+        if self.mode15m.mode in ['trendDown', 'trendUp']:
+            res = self.upAndDownCount()
+            if res['up'] == 3 or res['down'] == 3:
+                self.mode15m.scope = 0.05
+            elif res['up'] == 2 or res['down'] == 2:
+                self.mode15m.scope = 0.02
+            elif res['up'] == 1 or res['down'] == 1:
+                self.mode15m.scope = 0.01
 
     def strategy(self):
         if not self.mode15m or not self.mode1d or not self.mode4h or not self.mode1h:

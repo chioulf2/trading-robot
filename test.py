@@ -1,9 +1,1 @@
-import time
-
-
-def getHumanReadTime(t=None):
-    print(t)
-    return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(t))
-
-
-print(getHumanReadTime())
+print(0.4*46.9*6.34)
