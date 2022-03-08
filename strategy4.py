@@ -340,13 +340,9 @@ class Strategy4(object):
         # 开仓时间和模式转换时间必须在同一根k线，保证时效性
         print('模式改变时间：' + getHumanReadTime(self.mode15m.changeModeTime), '当前时间: ' + getHumanReadTime())
         print('模式改变详情: ' + self.mode15m.oldMsg)
-        if self.oldChangeModeTime == self.mode15m.changeModeTime:
-            return
         if time.time() - self.mode15m.changeModeTime > 15 * 60:
             return
-        self.sendMsg('模式改变时间：' + getHumanReadTime(self.mode15m.changeModeTime))
-        # 设置时间让下一单无法开出
-        self.oldChangeModeTime = self.mode15m.changeModeTime
+        self.sendMsg('模式改变时间：' + getHumanReadTime(self.mode15m.changeModeTime) + '\n模式改变详情: ' + self.mode15m.oldMsg)
         if (self.mode15m.mode == 'trendUp' or self.mode15m.mode == 'shockUp') and (
                 self.mode1h.mode in ['trendUp', 'shockUp'] or self.mode4h.mode in ['trendUp',
                                                                                    'shockUp'] or self.mode1d.mode in [
