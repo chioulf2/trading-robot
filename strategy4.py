@@ -274,6 +274,7 @@ class Strategy4(object):
         self.mode4h = Mode('4h', self)
         self.mode1h = Mode('1h', self)
         self.oldChangeModeTime = 0  # 上次模式改变的时间，如果和本次模式改变时间相同，则不开仓
+        self.oldMode = ''
         pass
 
     def add(self, user):
@@ -342,7 +343,12 @@ class Strategy4(object):
         print('模式改变详情: ' + self.mode15m.oldMsg)
         if time.time() - self.mode15m.changeModeTime > 15 * 60:
             return
+        if self.oldChangeModeTime == self.mode15m.changeModeTime and self.oldMode == self.mode15m.mode:
+            return
+        self.oldMode = self.mode15m.mode
         self.sendMsg('模式改变时间：' + getHumanReadTime(self.mode15m.changeModeTime) + '\n模式改变详情: ' + self.mode15m.oldMsg)
+        # 设置时间让下一单无法开出
+        self.oldChangeModeTime = self.mode15m.changeModeTime
         if (self.mode15m.mode == 'trendUp' or self.mode15m.mode == 'shockUp') and (
                 self.mode1h.mode in ['trendUp', 'shockUp'] or self.mode4h.mode in ['trendUp',
                                                                                    'shockUp'] or self.mode1d.mode in [
