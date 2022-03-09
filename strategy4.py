@@ -39,7 +39,7 @@ except ImportError:
 
 params = {
     '15m': {
-        'BW': 0.03,
+        'BW': 0.025,
         'break': 0.005
     },
     '1h': {
