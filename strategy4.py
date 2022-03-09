@@ -43,7 +43,7 @@ params = {
         'break': 0.005
     },
     '1h': {
-        'BW': 0.05,
+        'BW': 0.052,
         'break': 0.009,
     },
     '4h': {
@@ -221,6 +221,8 @@ class Mode(object):
         status = False
         MA20 = getMA(data, 20)
         currentPrice = float(data[-1][4])
+        high = float(data[-1][2])
+        low = float(data[-1][3])
         if (self.mode == 'trendDown' and currentPrice > MA20 and (
                 currentPrice - MA20) / MA20 > 0.004) or (self.mode == 'trendUp' and currentPrice < MA20 and (
                 MA20 - currentPrice) / MA20 > 0.004):
@@ -236,15 +238,17 @@ class Mode(object):
         [MB, UP, LB, PB, BW] = getBoll(data, 0, self.BBandsK)
         self.scope = BW * 0.7
         currentPrice = float(data[-1][4])
+        high = float(data[-1][2])
+        low = float(data[-1][3])
         # self.canOpen = (UP - LB) / MB > 0.01
         if LB < currentPrice < UP:
-            if currentPrice < MB and currentPrice < LB * (1 + (BW / 10 - 0.0009)):
+            if currentPrice < MB and low < LB * (1 + (BW / 10 - 0.0009)):
                 if self.canOpen:
                     self.msg = '震荡开单做多 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(
                         MB) + ' 下轨: ' + str(
                         LB)
                 status = 'LB'
-            if currentPrice > MB and currentPrice > UP * (1 - (BW / 10 - 0.0009)):
+            if currentPrice > MB and high > UP * (1 - (BW / 10 - 0.0009)):
                 if self.canOpen:
                     self.msg = '震荡开单做空 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(
                         MB) + ' 下轨: ' + str(
@@ -257,12 +261,14 @@ class Mode(object):
         [MB, UP, LB, PB, BW] = getBoll(data, 0, self.BBandsK)
         [preMB, preUP, preLB, prePB, preBW] = getBoll(data, -1, self.BBandsK)
         currentPrice = float(data[-1][4])
+        high = float(data[-1][2])
+        low = float(data[-1][3])
         if (currentPrice > UP or currentPrice < LB) and preBW < BW < params[self.interval]['BW']:
-            if currentPrice > UP and abs(currentPrice - UP) / UP > params[self.interval]['break']:
+            if currentPrice > UP and abs(high - UP) / UP > params[self.interval]['break']:
                 self.scope = profitScope
                 self.msg = '趋势开多 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
                 status = 'up'
-            if currentPrice < LB and abs(currentPrice - LB) / LB > params[self.interval]['break']:
+            if currentPrice < LB and abs(low - LB) / LB > params[self.interval]['break']:
                 self.scope = profitScope
                 self.msg = '趋势开空 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
                 status = 'down'
