@@ -348,10 +348,31 @@ class Strategy4(object):
         elif self.mode1d.mode in ['trendDown', 'shockDown']:
             down = down + 1
         return {'up': up, 'down': down}
+    
+    def getScore(self):
+        score = 0
+        if self.mode1d.mode === 'trendUp':
+            score = score + 3
+        elif self.mode1d.mode === 'trendDown':
+            score = score - 3
+        if self.mode4h.mode === 'trendUp':
+            score = score + 2
+        elif self.mode4h.mode === 'trendDown':
+            score = score - 2
+        if self.mode1h.mode === 'trendUp':
+            score = score + 1
+        elif self.mode1h.mode === 'trendDown':
+            score = score - 1
+        return self.mode15m.mode === 'trendUp'?score:-score
 
     def setScope(self):
         if self.mode15m.mode in ['trendDown', 'trendUp']:
             res = self.upAndDownCount()
+            score = 0
+            if self.mode15m.mode === 'trendDown':
+                score = down-up
+            else:
+                score = up-down
             if res['up'] == 3 or res['down'] == 3:
                 self.mode15m.scope = 0.05
             elif res['up'] == 2 or res['down'] == 2:
