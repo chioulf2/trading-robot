@@ -386,6 +386,7 @@ class Strategy4(object):
             #     self.mode15m.scope = 0.005
             pass
             score = self.getScore()
+            print('当前打分: ', score)
             if score in profitScope:
                 self.mode15m.scope = profitScope[score]
 
