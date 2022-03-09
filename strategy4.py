@@ -58,7 +58,15 @@ params = {
 
 # 止损幅度
 stopScope = 0.01
-profitScope = 0.02
+profitScope = {
+    '6': 0.05,
+    '5': 0.04,
+    '4': 0.03,
+    '3': 0.02,
+    '2': 0.01,
+    '1': 0.005,
+    '0': 0.005
+}
 
 
 def isNeedleMarketStart(data):
@@ -351,34 +359,35 @@ class Strategy4(object):
     
     def getScore(self):
         score = 0
-        if self.mode1d.mode === 'trendUp':
+        if self.mode1d.mode == 'trendUp':
             score = score + 3
-        elif self.mode1d.mode === 'trendDown':
+        elif self.mode1d.mode == 'trendDown':
             score = score - 3
-        if self.mode4h.mode === 'trendUp':
+        if self.mode4h.mode == 'trendUp':
             score = score + 2
-        elif self.mode4h.mode === 'trendDown':
+        elif self.mode4h.mode == 'trendDown':
             score = score - 2
-        if self.mode1h.mode === 'trendUp':
+        if self.mode1h.mode == 'trendUp':
             score = score + 1
-        elif self.mode1h.mode === 'trendDown':
+        elif self.mode1h.mode == 'trendDown':
             score = score - 1
-        return self.mode15m.mode === 'trendUp'?score:-score
+        if self.mode15m.mode == 'trendDown':
+            score = -score
+        return str(score)
 
     def setScope(self):
         if self.mode15m.mode in ['trendDown', 'trendUp']:
-            res = self.upAndDownCount()
-            score = 0
-            if self.mode15m.mode === 'trendDown':
-                score = down-up
-            else:
-                score = up-down
-            if res['up'] == 3 or res['down'] == 3:
-                self.mode15m.scope = 0.05
-            elif res['up'] == 2 or res['down'] == 2:
-                self.mode15m.scope = 0.02
-            elif res['up'] == 1 or res['down'] == 1:
-                self.mode15m.scope = 0.005
+            # res = self.upAndDownCount()
+            # if res['up'] == 3 or res['down'] == 3:
+            #     self.mode15m.scope = 0.05
+            # elif res['up'] == 2 or res['down'] == 2:
+            #     self.mode15m.scope = 0.02
+            # elif res['up'] == 1 or res['down'] == 1:
+            #     self.mode15m.scope = 0.005
+            pass
+            score = self.getScore()
+            if score in profitScope:
+                self.mode15m.scope = profitScope[score]
 
     def strategy(self):
         if not self.mode15m or not self.mode1d or not self.mode4h or not self.mode1h:
