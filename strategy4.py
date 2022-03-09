@@ -357,7 +357,7 @@ class Strategy4(object):
             elif res['up'] == 2 or res['down'] == 2:
                 self.mode15m.scope = 0.02
             elif res['up'] == 1 or res['down'] == 1:
-                self.mode15m.scope = 0.01
+                self.mode15m.scope = 0.005
 
     def strategy(self):
         if not self.mode15m or not self.mode1d or not self.mode4h or not self.mode1h:
