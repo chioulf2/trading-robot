@@ -362,7 +362,7 @@ class Strategy4(object):
         elif self.mode1d.mode in ['trendDown', 'shockDown']:
             down = down + 1
         return {'up': up, 'down': down}
-    
+
     def getScore(self):
         score = 0
         if self.mode1d.mode == 'trendUp':
@@ -379,6 +379,8 @@ class Strategy4(object):
             score = score - 1
         if self.mode15m.mode == 'trendDown':
             score = -score
+        if score < 0:
+            score = 0
         return str(score)
 
     def setScope(self):
@@ -415,18 +417,12 @@ class Strategy4(object):
         # 设置时间让下一单无法开出
         self.oldChangeModeTime = self.mode15m.changeModeTime
         self.setScope()
-        if (self.mode15m.mode == 'trendUp' or self.mode15m.mode == 'shockUp') and (
-                self.mode1h.mode in ['trendUp', 'shockUp'] or self.mode4h.mode in ['trendUp',
-                                                                                   'shockUp'] or self.mode1d.mode in [
-                    'trendUp', 'shockUp']):
+        if self.mode15m.mode == 'trendUp' or self.mode15m.mode == 'shockUp':
             self.clearPosition('short')
             if self.mode15m.canOpen:
                 self.doLong(self.mode15m.scope, stopScope)
                 self.sendMsg(self.mode15m.msg)
-        elif (self.mode15m.mode == 'trendDown' or self.mode15m.mode == 'shockDown') and (
-                self.mode1h.mode in ['trendDown', 'shockDown'] or self.mode4h.mode in ['trendDown',
-                                                                                       'shockDown'] or self.mode1d.mode in [
-                    'trendDown', 'shockDown']):
+        elif self.mode15m.mode == 'trendDown' or self.mode15m.mode == 'shockDown':
             self.clearPosition('long')
             if self.mode15m.canOpen:
                 self.doShort(self.mode15m.scope, stopScope)
