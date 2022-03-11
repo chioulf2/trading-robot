@@ -59,12 +59,9 @@ params = {
 # 止损幅度
 stopScope = 0.01
 profitScope = {
-    '6': 0.05,
-    '5': 0.04,
-    '4': 0.03,
-    '3': 0.02,
-    '2': 0.01,
-    '1': 0.005,
+    '3': 0.05,
+    '2': 0.02,
+    '1': 0.01,
     '0': 0.005
 }
 
@@ -366,13 +363,13 @@ class Strategy4(object):
     def getScore(self):
         score = 0
         if self.mode1d.mode == 'trendUp':
-            score = score + 3
+            score = score + 1
         elif self.mode1d.mode == 'trendDown':
-            score = score - 3
+            score = score - 1
         if self.mode4h.mode == 'trendUp':
-            score = score + 2
+            score = score + 1
         elif self.mode4h.mode == 'trendDown':
-            score = score - 2
+            score = score - 1
         if self.mode1h.mode == 'trendUp':
             score = score + 1
         elif self.mode1h.mode == 'trendDown':
