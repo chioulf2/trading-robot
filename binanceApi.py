@@ -41,8 +41,13 @@ class BinanceApi(object):
         signature = self.getSignature(msg)
         response = self.getRequest(method, msg, signature)
         content = json.loads(response.content)
-        print('资产: ', str(content[1]['balance']), ' U')
-        return float(content[1]['balance'])
+        # 只统计U本位合约的资产
+        u_balance = 0 
+        for i in range(len(content)):
+            if content[i]['asset'] == 'USDT':
+                u_balance = content[i]['balance']
+        print('资产: ', str(u_balance), ' U')
+        return float(u_balance)
 
     def getUserData(self, symbol):
         method = '/fapi/v2/account'
