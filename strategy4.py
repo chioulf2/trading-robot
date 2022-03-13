@@ -57,7 +57,7 @@ params = {
 }
 
 # 止损幅度
-stopScope = 0.005
+stopScope = 0.01
 profitScope = {
     '3': 0.05,
     '2': 0.02,
@@ -151,7 +151,7 @@ class Mode(object):
                 # 继续针市
                 self.DFA(data)
         if sideEffect:
-            if self.interval == '15m' and time.time() - self.updateTime > 5:
+            if self.interval == '15m' and time.time() - self.updateTime > 5 and time.time() - data[-1][6]/1000:
                 self.updateTime = time.time()
                 self.manager.strategy()
 
