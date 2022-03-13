@@ -42,7 +42,7 @@ class BinanceApi(object):
         response = self.getRequest(method, msg, signature)
         content = json.loads(response.content)
         # 只统计U本位合约的资产
-        u_balance = 0 
+        u_balance = 0
         for i in range(len(content)):
             if content[i]['asset'] == 'USDT':
                 u_balance = content[i]['balance']
