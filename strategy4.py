@@ -151,8 +151,7 @@ class Mode(object):
                 # 继续针市
                 self.DFA(data)
         if sideEffect:
-            if self.interval == '15m' and time.time() - self.updateTime > 5 and abs(
-                    time.time() - int(data[-1][6] / 1000)) < 2 and abs(float(data[-1][2]) - float(data[-1][3])) / float(
+            if self.interval == '15m' and time.time() - self.updateTime > 5 and abs(float(data[-1][2]) - float(data[-1][3])) / float(
                 data[-1][1]) < 0.015:
                 self.updateTime = time.time()
                 self.manager.strategy()
