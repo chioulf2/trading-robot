@@ -397,21 +397,26 @@ class Strategy4(object):
                 self.mode15m.scope = profitScope[score]
 
     def strategy(self):
+        # 等待初始化完成
         if not self.mode15m or not self.mode1d or not self.mode4h or not self.mode1h:
             return
-        print('self.mode15m.mode: ', self.mode15m.mode, ', self.mode1h.mode: ', self.mode1h.mode,
-              ', self.mode4h.mode: ',
-              self.mode4h.mode, ', self.mode1d.mode: ', self.mode1d.mode, '\n')
-        # 开仓时间和模式转换时间必须在同一根k线，保证时效性
-        print('模式改变时间：' + getHumanReadTime(self.mode15m.changeModeTime), '当前时间: ' + getHumanReadTime())
-        print('模式改变详情: ' + self.mode15m.oldMsg)
 
+        # 打印必要信息
+        print('\n\n\n')
+        print('当前时间: ' + getHumanReadTime())
+        print('模式改变时间：' + getHumanReadTime(self.mode15m.changeModeTime))
+        print('模式改变详情: ' + self.mode15m.oldMsg)
+        print('目前的模式：15分钟模式: ', self.mode15m.mode, ', 一小时模式: ', self.mode1h.mode,
+              ', 四小时模式: ',
+              self.mode4h.mode, ', 一天模式: ', self.mode1d.mode, '\n')
+
+        # 必须在模式改变的这跟k线开仓，保证时效性
         if time.time() - self.mode15m.changeModeTime > 15 * 60:
             return
+        # 通过新旧对比来判断15分钟模式是否改变
         if self.oldChangeModeTime == self.mode15m.changeModeTime and self.oldMode == self.mode15m.mode:
             return
         self.oldMode = self.mode15m.mode
-        self.sendMsg('模式改变时间：' + getHumanReadTime(self.mode15m.changeModeTime) + '\n模式改变详情: ' + self.mode15m.oldMsg)
         # 设置时间让下一单无法开出
         self.oldChangeModeTime = self.mode15m.changeModeTime
         self.setScope()
@@ -419,9 +424,7 @@ class Strategy4(object):
             self.clearPosition('short')
             if self.mode15m.canOpen:
                 self.doLong(self.mode15m.scope, stopScope)
-                self.sendMsg(self.mode15m.msg)
         elif self.mode15m.mode == 'trendDown' or self.mode15m.mode == 'shockDown':
             self.clearPosition('long')
             if self.mode15m.canOpen:
                 self.doShort(self.mode15m.scope, stopScope)
-                self.sendMsg(self.mode15m.msg)

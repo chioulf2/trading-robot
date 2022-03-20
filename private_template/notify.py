@@ -37,4 +37,4 @@ class NotifyService(object):
 
     def notify(self, message):
         print(message)
-        self.sendMessage('版本更新时间: ' + '2021.07.29 20:00' + '\n时间: ' + getHumanReadTime() + '\n' + message)
+        self.sendMessage(message + '\n时间: ' + getHumanReadTime())
