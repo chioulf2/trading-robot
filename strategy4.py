@@ -264,11 +264,9 @@ class Mode(object):
         low = float(data[-1][3])
         if (currentPrice > UP or currentPrice < LB) and preBW < BW < params[self.interval]['BW']:
             if currentPrice > UP and abs(high - UP) / UP > params[self.interval]['break']:
-                self.scope = profitScope
                 self.msg = '趋势开多 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
                 status = 'up'
             if currentPrice < LB and abs(low - LB) / LB > params[self.interval]['break']:
-                self.scope = profitScope
                 self.msg = '趋势开空 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(MB) + ' 下轨: ' + str(LB)
                 status = 'down'
         return {'status': status}
