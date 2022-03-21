@@ -101,7 +101,7 @@ class Mode(object):
     def __init__(self, interval, manager):
         self.updateTime = time.time()
         self.manager = manager
-        self.scope = profitScope
+        self.scope = 0.01
         self.canOpen = True
         self.msg = ''
         self.oldMsg = ''
@@ -234,19 +234,20 @@ class Mode(object):
     def shock(self, data):
         status = ''
         [MB, UP, LB, PB, BW] = getBoll(data, 0, self.BBandsK)
-        self.scope = BW * 0.7
+        if self.scope > BW * 0.7:
+            self.scope = BW * 0.7
         currentPrice = float(data[-1][4])
         high = float(data[-1][2])
         low = float(data[-1][3])
         # self.canOpen = (UP - LB) / MB > 0.01
         if LB < currentPrice < UP:
-            if currentPrice < MB and low < LB * (1 + (BW / 10 - 0.0009)):
+            if currentPrice < MB and low < LB * (1 + (BW / 10)):
                 if self.canOpen:
                     self.msg = '震荡开单做多 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(
                         MB) + ' 下轨: ' + str(
                         LB)
                 status = 'LB'
-            if currentPrice > MB and high > UP * (1 - (BW / 10 - 0.0009)):
+            if currentPrice > MB and high > UP * (1 - (BW / 10)):
                 if self.canOpen:
                     self.msg = '震荡开单做空 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(
                         MB) + ' 下轨: ' + str(
