@@ -8,6 +8,8 @@
 1. 采样频率设置为：5秒一次
 2. 针市中布林线标准差设置为3
 3. 采用4个k线，以15分钟线为基础，如果1h,4h,1d有一个跟15分钟线趋势相同，则可以开单，否则不可以，且根据模式匹配的数量决定止盈幅度
+4. 中轨斜率过大，比如5根k线斜率大于0.0013，就进入趋势行情
+5. 弥补漏洞：trendOver要平掉所有仓位
 
 15分钟参数:
 趋势行情：开口系数小于3%，价格突破布林线上下轨0.5%
@@ -151,8 +153,9 @@ class Mode(object):
                 # 继续针市
                 self.DFA(data)
         if sideEffect:
-            if self.interval == '15m' and time.time() - self.updateTime > 5 and abs(float(data[-1][2]) - float(data[-1][3])) / float(
-                data[-1][1]) < 0.015:
+            if self.interval == '15m' and time.time() - self.updateTime > 5 and abs(
+                    float(data[-1][2]) - float(data[-1][3])) / float(
+                    data[-1][1]) < 0.015:
                 self.updateTime = time.time()
                 self.manager.strategy()
 
@@ -260,6 +263,9 @@ class Mode(object):
         status = ''
         [MB, UP, LB, PB, BW] = getBoll(data, 0, self.BBandsK)
         [preMB, preUP, preLB, prePB, preBW] = getBoll(data, -1, self.BBandsK)
+        [pre5MB, pre5UP, pre5LB, pre5PB, pre5BW] = getBoll(data, -5, self.BBandsK)
+        if abs(pre5MB - MB) / min(pre5MB, MB) > 0.0013:
+            return {'status': status}
         currentPrice = float(data[-1][4])
         high = float(data[-1][2])
         low = float(data[-1][3])
@@ -428,3 +434,6 @@ class Strategy4(object):
             self.clearPosition('long')
             if self.mode15m.canOpen:
                 self.doShort(self.mode15m.scope, stopScope)
+        elif self.mode15m.mode == 'trendOver':
+            self.clearPosition('short')
+            self.clearPosition('long')
