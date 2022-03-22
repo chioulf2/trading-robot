@@ -234,6 +234,7 @@ class Mode(object):
     def shock(self, data):
         status = ''
         [MB, UP, LB, PB, BW] = getBoll(data, 0, self.BBandsK)
+        self.scope = 0.01
         if self.scope > BW * 0.7:
             self.scope = BW * 0.7
         currentPrice = float(data[-1][4])
