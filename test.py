@@ -1,1 +1,3 @@
-print(min(1,2))
+import json
+
+print(json.loads('{"e": "ORDER_TRADE_UPDATE", "T": 1647964763575, "E": 1647964763581, "o": {"s": "ETHUSDT", "c": "btDNvdtUQzga0c9qWbEs6y", "S": "BUY", "o": "LIMIT", "f": "GTC", "q": "0.100", "p": "3002.48", "ap": "3002.48000", "sp": "0", "x": "TRADE", "X": "FILLED", "i": 8389765518808001676, "l": "0.100", "z": "0.100", "L": "3002.48", "n": "0.06004960", "N": "USDT", "T": 1647964763575, "t": 1523102124, "b": "0", "a": "0", "m": true, "R": true, "wt": "CONTRACT_PRICE", "ot": "LIMIT", "ps": "SHORT", "cp": false, "rp": "1.87100000", "pP": false, "si": 0, "ss": 0}}'))
