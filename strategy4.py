@@ -236,8 +236,12 @@ class Mode(object):
 
     def shock(self, data):
         status = ''
-        [MB, UP, LB, PB, BW] = getBoll(data, 0, self.BBandsK)
         self.scope = 0.01
+        [MB, UP, LB, PB, BW] = getBoll(data, 0, self.BBandsK)
+        [preMB, preUP, preLB, prePB, preBW] = getBoll(data, -1, self.BBandsK)
+        [pre5MB, pre5UP, pre5LB, pre5PB, pre5BW] = getBoll(data, -5, self.BBandsK)
+        if abs(pre5MB - MB) / min(pre5MB, MB) > 0.001:
+            return {'status': status}
         if self.scope > BW * 0.7:
             self.scope = BW * 0.7
         currentPrice = float(data[-1][4])
@@ -264,7 +268,7 @@ class Mode(object):
         [MB, UP, LB, PB, BW] = getBoll(data, 0, self.BBandsK)
         [preMB, preUP, preLB, prePB, preBW] = getBoll(data, -1, self.BBandsK)
         [pre5MB, pre5UP, pre5LB, pre5PB, pre5BW] = getBoll(data, -5, self.BBandsK)
-        if abs(pre5MB - MB) / min(pre5MB, MB) > 0.0013:
+        if abs(pre5MB - MB) / min(pre5MB, MB) > 0.001:
             return {'status': status}
         currentPrice = float(data[-1][4])
         high = float(data[-1][2])
