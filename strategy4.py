@@ -59,7 +59,7 @@ params = {
 }
 
 # 止损幅度
-stopScope = 0.0065
+stopScope = 0.005
 profitScope = {
     '3': 0.05,
     '2': 0.02,
