@@ -23,6 +23,7 @@ class WebSocketListener(object):
         self.ws = None
 
     def handleClosePosition(self, message):
+        self.user.notifier.notify(json.dumps(message))
         if message['o']['x'] == "TRADE" and (
                 message['o']['X'] == "FILLED" or message['o']['X'] == "PARTIALLY_FILLED") and \
                 (message['o']['ot'] == "STOP_MARKET" or message['o']['ot'] == "TRAILING_STOP_MARKET" or
