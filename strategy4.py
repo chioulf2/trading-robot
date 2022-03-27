@@ -267,8 +267,8 @@ class Mode(object):
         status = ''
         [MB, UP, LB, PB, BW] = getBoll(data, 0, self.BBandsK)
         [preMB, preUP, preLB, prePB, preBW] = getBoll(data, -1, self.BBandsK)
-        [pre5MB, pre5UP, pre5LB, pre5PB, pre5BW] = getBoll(data, -5, self.BBandsK)
-        if abs(pre5MB - MB) / min(pre5MB, MB) > 0.001:
+        [pre10MB, pre10UP, pre10LB, pre10PB, pre10BW] = getBoll(data, -10, self.BBandsK)
+        if abs(pre10MB - MB) / min(pre10MB, MB) > 0.001:
             return {'status': status}
         currentPrice = float(data[-1][4])
         high = float(data[-1][2])
