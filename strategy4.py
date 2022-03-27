@@ -59,7 +59,7 @@ params = {
 }
 
 # 止损幅度
-stopScope = 0.005
+stopScope = 0.003
 profitScope = {
     '3': 0.05,
     '2': 0.02,
@@ -103,7 +103,7 @@ class Mode(object):
     def __init__(self, interval, manager):
         self.updateTime = time.time()
         self.manager = manager
-        self.scope = 0.01
+        self.scope = 0.003
         self.canOpen = True
         self.msg = ''
         self.oldMsg = ''
@@ -236,7 +236,7 @@ class Mode(object):
 
     def shock(self, data):
         status = ''
-        self.scope = 0.01
+        self.scope = 0.003
         [MB, UP, LB, PB, BW] = getBoll(data, 0, self.BBandsK)
         [preMB, preUP, preLB, prePB, preBW] = getBoll(data, -1, self.BBandsK)
         [pre5MB, pre5UP, pre5LB, pre5PB, pre5BW] = getBoll(data, -5, self.BBandsK)
