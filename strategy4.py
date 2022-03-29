@@ -438,6 +438,3 @@ class Strategy4(object):
             self.clearPosition('long')
             if self.mode15m.canOpen:
                 self.doShort(self.mode15m.scope, stopScope)
-        elif self.mode15m.mode == 'trendOver':
-            self.clearPosition('short')
-            self.clearPosition('long')
