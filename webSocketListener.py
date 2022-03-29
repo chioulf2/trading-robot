@@ -23,7 +23,6 @@ class WebSocketListener(object):
         self.ws = None
 
     def handleClosePosition(self, message):
-        self.user.notifier.notify('ORDER_TRADE_UPDATE:\n' + json.dumps(message))
         if message['o']['x'] == "TRADE" and (
                 message['o']['X'] == "FILLED" or message['o']['X'] == "PARTIALLY_FILLED") and \
                 (message['o']['ot'] == "STOP_MARKET" or message['o']['ot'] == "TRAILING_STOP_MARKET" or
@@ -69,7 +68,6 @@ class WebSocketListener(object):
             ws.close()
             self.listenStreams()
         elif message['e'] == 'ACCOUNT_UPDATE':
-            self.user.notifier.notify('ACCOUNT_UPDATE:\n' + json.dumps(message))
             self.user.balance = float(message['a']['B'][0]['wb'])
         elif message['e'] == "ORDER_TRADE_UPDATE":
             self.handleClosePosition(message)
