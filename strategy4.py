@@ -61,10 +61,10 @@ params = {
 # 止损幅度
 stopScope = 0.003
 profitScope = {
-    '3': 0.003,
-    '2': 0.003,
-    '1': 0.003,
-    '0': 0.003
+    '3': 0.005,
+    '2': 0.005,
+    '1': 0.005,
+    '0': 0.005
 }
 
 
@@ -104,6 +104,7 @@ class Mode(object):
         self.updateTime = time.time()
         self.manager = manager
         self.scope = 0.003
+        self.stopScope = 0.003
         self.canOpen = True
         self.msg = ''
         self.oldMsg = ''
@@ -236,14 +237,11 @@ class Mode(object):
 
     def shock(self, data):
         status = ''
-        self.scope = 0.003
         [MB, UP, LB, PB, BW] = getBoll(data, 0, self.BBandsK)
         [preMB, preUP, preLB, prePB, preBW] = getBoll(data, -1, self.BBandsK)
         [pre5MB, pre5UP, pre5LB, pre5PB, pre5BW] = getBoll(data, -5, self.BBandsK)
         if abs(pre5MB - MB) / min(pre5MB, MB) > 0.001:
             return {'status': status}
-        if self.scope > BW * 0.7:
-            self.scope = BW * 0.7
         currentPrice = float(data[-1][4])
         high = float(data[-1][2])
         low = float(data[-1][3])
@@ -255,12 +253,18 @@ class Mode(object):
                         MB) + ' 下轨: ' + str(
                         LB)
                 status = 'LB'
+                self.scope = 0.003
+                if self.scope > BW * 0.7:
+                    self.scope = BW * 0.7
             if currentPrice > MB and high > UP * (1 - (BW / 10)):
                 if self.canOpen:
                     self.msg = '震荡开单做空 当前价格: ' + str(currentPrice) + ' 上轨: ' + str(UP) + ' 中轨: ' + str(
                         MB) + ' 下轨: ' + str(
                         LB)
                 status = 'UP'
+                self.scope = 0.003
+                if self.scope > BW * 0.7:
+                    self.scope = BW * 0.7
         return {'status': status}
 
     def trend(self, data):
@@ -405,6 +409,7 @@ class Strategy4(object):
             print('当前打分: ', score)
             if score in profitScope:
                 self.mode15m.scope = profitScope[score]
+            self.mode15m.stopScope = 0.005
 
     def strategy(self):
         # 等待初始化完成
